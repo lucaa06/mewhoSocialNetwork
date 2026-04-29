@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// 60 days in seconds — matches Instagram-like "stay logged in"
+const SESSION_MAX_AGE = 60 * 24 * 60 * 60;
+
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -16,7 +19,13 @@ export async function createClient() {
         setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, {
+                ...options,
+                maxAge: SESSION_MAX_AGE,
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+                // NOT httpOnly — browser client needs to read session cookies
+              })
             );
           } catch {
             // Called from Server Component — cookies set in middleware instead

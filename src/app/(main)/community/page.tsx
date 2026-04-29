@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
+import { CommunityRequestButton } from "@/components/community/CommunityRequestModal";
+import { CommunitySearch } from "@/components/community/CommunitySearch";
+import { CommunityGrid } from "@/components/community/CommunityGrid";
 
 export const metadata: Metadata = {
   title: "Community",
@@ -9,30 +11,80 @@ export const metadata: Metadata = {
 
 export default async function CommunityPage() {
   const supabase = await createClient();
-  const { data: communities } = await supabase
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const { data: allCommunities } = await supabase
     .from("communities")
-    .select("id, slug, name, description, avatar_url, country_code")
+    .select("*")
     .eq("is_public", true)
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(100);
+
+  let myCommunities: typeof allCommunities = [];
+  let joinedCommunities: typeof allCommunities = [];
+
+  if (user) {
+    const [createdResult, joinedResult] = await Promise.all([
+      supabase
+        .from("communities")
+        .select("*")
+        .eq("created_by", user.id)
+        .eq("is_public", true)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("community_members")
+        .select("community:communities(*)")
+        .eq("user_id", user.id)
+        .order("joined_at", { ascending: false }),
+    ]);
+
+    myCommunities = createdResult.data ?? [];
+    joinedCommunities = (joinedResult.data ?? [])
+      .map((r: { community: unknown }) => r.community)
+      .filter(Boolean) as typeof allCommunities;
+  }
+
+  const myIds = new Set([...(myCommunities ?? []).map(c => c.id), ...(joinedCommunities ?? []).map(c => c.id)]);
+  const exploreCommunities = (allCommunities ?? []).filter(c => !myIds.has(c.id));
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-bold text-black">Community</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {(communities ?? []).map((c) => (
-          <Link
-            key={c.id}
-            href={`/community/${c.slug}`}
-            className="bg-white rounded-xl border border-black/6 p-4 hover:border-black/18 transition-colors"
-          >
-            <h2 className="font-semibold text-black">{c.name}</h2>
-            {c.description && (
-              <p className="text-sm text-black/50 mt-1 line-clamp-2">{c.description}</p>
-            )}
-          </Link>
-        ))}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold" style={{ color: "var(--fg)", fontFamily: "var(--fh)" }}>
+          Community
+        </h1>
+        <CommunityRequestButton />
       </div>
+
+      {/* Le tue community */}
+      {user && (myCommunities?.length ?? 0) > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-bold uppercase tracking-wide" style={{ color: "var(--muted)" }}>
+            Le tue community
+          </h2>
+          <CommunityGrid communities={myCommunities ?? []} />
+        </section>
+      )}
+
+      {/* Community che segui */}
+      {user && (joinedCommunities?.length ?? 0) > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-bold uppercase tracking-wide" style={{ color: "var(--muted)" }}>
+            Community che segui
+          </h2>
+          <CommunityGrid communities={joinedCommunities ?? []} />
+        </section>
+      )}
+
+      {/* Esplora */}
+      <section className="space-y-3">
+        {user && (
+          <h2 className="text-sm font-bold uppercase tracking-wide" style={{ color: "var(--muted)" }}>
+            Esplora community
+          </h2>
+        )}
+        <CommunitySearch communities={exploreCommunities} />
+      </section>
     </div>
   );
 }

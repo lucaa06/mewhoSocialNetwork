@@ -6,6 +6,8 @@ import type { Post, Comment } from "@/types/database";
 import { formatDate, getAvatarFallback } from "@/lib/utils";
 import { Flag, Heart, Send } from "lucide-react";
 import { toggleLike, addComment } from "@/app/actions/posts";
+import { celebrate } from "@/lib/celebrate";
+import { BackButton } from "@/components/layout/BackButton";
 
 interface PostDetailProps {
   post: Post;
@@ -23,6 +25,7 @@ export function PostDetail({ post, comments: initialComments, currentUserId }: P
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function handleLike() {
+    if (!liked) celebrate();
     startTransition(async () => {
       setLiked(v => !v);
       setLikeCount(v => liked ? v - 1 : v + 1);
@@ -37,7 +40,7 @@ export function PostDetail({ post, comments: initialComments, currentUserId }: P
     setCommentText("");
     startTransition(async () => {
       const result = await addComment(post.id, text);
-      if (!result.error) {
+      if (!result.error) { celebrate();
         setComments(prev => [...prev, {
           id: crypto.randomUUID(),
           post_id: post.id,
@@ -54,6 +57,7 @@ export function PostDetail({ post, comments: initialComments, currentUserId }: P
 
   return (
     <div className="max-w-2xl mx-auto space-y-4 px-0 sm:px-0">
+      <BackButton />
       {/* Post */}
       <article className="bg-white rounded-2xl border border-black/6 p-5 sm:p-6">
         <div className="flex items-center gap-3 mb-5">
@@ -71,7 +75,7 @@ export function PostDetail({ post, comments: initialComments, currentUserId }: P
                 <span className="font-semibold text-black group-hover:opacity-70 transition-opacity truncate">
                   {author?.display_name}
                 </span>
-                {author?.is_verified && <span className="text-[#DD4132] text-xs shrink-0">✓</span>}
+                {author?.is_verified && <span className="text-[#FF4A24] text-xs shrink-0">✓</span>}
               </div>
               <p className="text-xs text-black/35 truncate">
                 @{author?.username} · {formatDate(post.created_at)}
@@ -86,7 +90,7 @@ export function PostDetail({ post, comments: initialComments, currentUserId }: P
         {post.title && (
           <h1 className="text-xl sm:text-2xl font-bold text-black mb-3 leading-tight">{post.title}</h1>
         )}
-        <p className="text-black/80 whitespace-pre-wrap leading-relaxed text-[15px]">{post.content}</p>
+        <p className="text-black/80 whitespace-pre-wrap leading-relaxed text-[15px]" style={{ overflowWrap: "break-word", wordBreak: "break-word" }}>{post.content}</p>
 
         {post.tags?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-4">

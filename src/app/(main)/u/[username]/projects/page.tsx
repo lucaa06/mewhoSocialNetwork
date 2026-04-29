@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { BackButton } from "@/components/layout/BackButton";
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -20,7 +21,8 @@ export default async function UserProjectsPage({ params }: Props) {
 
   return (
     <div className="space-y-3">
-      <h2 className="font-semibold text-black">Progetti di @{username}</h2>
+      <BackButton href={`/u/${username}`} label={`@${username}`} />
+      <h2 className="font-semibold" style={{ color: "var(--fg)" }}>Progetti di @{username}</h2>
       {(projects ?? []).map((p) => (
         <div key={p.id} className="bg-white rounded-xl border border-black/6 p-4">
           <h3 className="font-medium text-black">{p.name}</h3>

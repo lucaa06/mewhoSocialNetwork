@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const PROVIDERS = [
   {
@@ -61,43 +62,62 @@ interface SocialAuthButtonsProps {
   mode?: "signin" | "signup";
 }
 
+// Providers enabled in Supabase dashboard — add others when configured
+const ENABLED: Set<string> = new Set(["google"]);
+
 export function SocialAuthButtons({ mode = "signin" }: SocialAuthButtonsProps) {
   const [loading, setLoading] = useState<string | null>(null);
 
   async function handleOAuth(provider: "apple" | "google" | "github" | "twitter") {
+    if (!ENABLED.has(provider)) {
+      toast.info("Disponibile a breve! 🚀", { description: "Stiamo configurando questo metodo di accesso." });
+      return;
+    }
     setLoading(provider);
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
-      },
+      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
     });
-    // redirect happens, no need to setLoading(null)
+    if (error) {
+      setLoading(null);
+      toast.error("Errore durante l'accesso. Riprova.");
+    }
+    // on success the browser redirects — no cleanup needed
   }
 
   const verb = mode === "signup" ? "Registrati con" : "Continua con";
 
   return (
     <div className="space-y-2.5">
-      {PROVIDERS.map(({ id, label, bg, text, border, icon }) => (
-        <button
-          key={id}
-          onClick={() => handleOAuth(id)}
-          disabled={!!loading}
-          className={`
-            w-full flex items-center gap-3 px-4 py-3 rounded-xl
-            text-sm font-medium transition-all duration-150
-            active:scale-[.98] disabled:opacity-50
-            ${bg} ${text} ${border}
-          `}
-        >
-          <span className="shrink-0 flex items-center">{icon}</span>
-          <span className="flex-1 text-center">
-            {loading === id ? "Attendere..." : `${verb} ${label}`}
-          </span>
-        </button>
-      ))}
+      {PROVIDERS.map(({ id, label, bg, text, border, icon }) => {
+        const available = ENABLED.has(id);
+        return (
+          <button
+            key={id}
+            onClick={() => handleOAuth(id)}
+            disabled={!!loading}
+            className={`
+              w-full flex items-center gap-3 px-4 py-3 rounded-xl
+              text-sm font-medium transition-all duration-150
+              active:scale-[.98] disabled:opacity-50
+              ${available ? "" : "opacity-55"}
+              ${bg} ${text} ${border}
+            `}
+          >
+            <span className="shrink-0 flex items-center">{icon}</span>
+            <span className="flex-1 text-center">
+              {loading === id ? "Attendere..." : `${verb} ${label}`}
+            </span>
+            {!available && (
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full opacity-70"
+                style={{ background: "rgba(255,255,255,0.15)" }}>
+                presto
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

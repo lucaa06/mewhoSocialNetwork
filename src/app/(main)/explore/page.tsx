@@ -27,7 +27,7 @@ export default async function ExplorePage({
         .select(`
           id, title, content, category, tags, country_code, city, created_at,
           reactions_count, comments_count,
-          author:profiles!author_id(id, username, display_name, avatar_url, role, is_verified)
+          author:profiles!author_id(id, username, display_name, avatar_url, avatar_emoji, role, is_verified)
         `)
         .eq("visibility", "public")
         .eq("is_hidden", false)

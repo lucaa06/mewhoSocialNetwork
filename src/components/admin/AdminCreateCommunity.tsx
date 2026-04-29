@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { adminCreateCommunity } from "@/app/actions/admin";
 import { toast } from "sonner";
+import { celebrate } from "@/lib/celebrate";
 
 export function AdminCreateCommunity() {
   const [isPending, startTransition] = useTransition();
@@ -22,7 +23,7 @@ export function AdminCreateCommunity() {
     startTransition(async () => {
       await adminCreateCommunity(form);
       setForm({ name: "", slug: "", description: "", is_public: true });
-      toast.success("Community creata");
+      toast.success("Community creata"); celebrate();
     });
   }
 
@@ -54,12 +55,12 @@ export function AdminCreateCommunity() {
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={form.is_public} onChange={e => setForm(f => ({ ...f, is_public: e.target.checked }))}
-            className="w-4 h-4 rounded accent-[#DD4132]" />
+            className="w-4 h-4 rounded accent-[#FF4A24]" />
           <span className="text-sm text-black/50">Pubblica</span>
         </label>
         <button type="submit" disabled={isPending || !form.name.trim()}
           className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-40"
-          style={{ background: "#DD4132" }}>
+          style={{ background: "#FF4A24" }}>
           {isPending ? "Creando..." : "Crea community"}
         </button>
       </div>

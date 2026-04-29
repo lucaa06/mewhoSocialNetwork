@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 export const revalidate = 3600; // re-generate hourly
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://meandwho.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://mewho.it";
   const supabase = await createClient();
 
   const staticRoutes: MetadataRoute.Sitemap = [

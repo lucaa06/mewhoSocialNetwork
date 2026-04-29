@@ -19,18 +19,34 @@ export function LoginForm() {
 
   async function onSubmit(data: LoginInput) {
     setLoading(true);
+
+    // Resolve identifier (email or username) → email
+    let email = data.identifier;
+    if (!email.includes("@")) {
+      const res = await fetch("/api/auth/resolve-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: data.identifier }),
+      });
+      if (!res.ok) {
+        setLoading(false);
+        toast.error("Utente non trovato");
+        return;
+      }
+      const json = await res.json();
+      email = json.email;
+    }
+
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword(data);
+    const { error } = await supabase.auth.signInWithPassword({ email, password: data.password });
     if (error) {
       setLoading(false);
       toast.error(error.message === "Invalid login credentials" ? "Email o password errati" : error.message);
       return;
     }
     const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-    const currentLevel = aal?.currentLevel;
-    const nextLevel = aal?.nextLevel;
     setLoading(false);
-    if (nextLevel === "aal2" && currentLevel !== "aal2") {
+    if (aal?.nextLevel === "aal2" && aal?.currentLevel !== "aal2") {
       router.push("/2fa");
       return;
     }
@@ -50,15 +66,15 @@ export function LoginForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-[11px] font-medium text-black/40 mb-1.5 uppercase tracking-widest">Email</label>
+          <label className="block text-[11px] font-medium text-black/40 mb-1.5 uppercase tracking-widest">Email o username</label>
           <input
-            {...register("email")}
-            type="email"
-            autoComplete="email"
-            placeholder="la-tua@email.com"
+            {...register("identifier")}
+            type="text"
+            autoComplete="username"
+            placeholder="la-tua@email.com oppure @username"
             className="input-base"
           />
-          {errors.email && <p className="text-xs text-black/50 mt-1">{errors.email.message}</p>}
+          {errors.identifier && <p className="text-xs text-black/50 mt-1">{errors.identifier.message}</p>}
         </div>
         <div>
           <div className="flex justify-between mb-1.5">

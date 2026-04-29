@@ -15,6 +15,8 @@ export type AdminActionType =
   | "ban_user"
   | "unban_user"
   | "verify_user"
+  | "assign_beta"
+  | "revoke_beta"
   | "hide_post"
   | "show_post"
   | "delete_post"
@@ -28,6 +30,8 @@ export interface Profile {
   display_name: string;
   bio: string | null;
   avatar_url: string | null;
+  avatar_emoji: string | null;
+  banner_color: string | null;
   role: UserRole;
   country_code: string | null;
   city: string | null;
@@ -36,6 +40,7 @@ export interface Profile {
   is_verified: boolean;
   is_suspended: boolean;
   is_banned: boolean;
+  is_beta: boolean;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
@@ -53,11 +58,13 @@ export interface Post {
   lat: number | null;
   lng: number | null;
   visibility: PostVisibility;
+  community_id: string | null;
   is_hidden: boolean;
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
   author?: Profile;
+  community?: { id: string; name: string; slug: string; avatar_emoji: string | null; category: string | null } | null;
   reactions_count?: number;
   comments_count?: number;
   user_reaction?: ReactionType | null;
@@ -128,6 +135,8 @@ export interface Community {
   name: string;
   description: string | null;
   avatar_url: string | null;
+  avatar_emoji: string | null;
+  category: string | null;
   country_code: string | null;
   is_public: boolean;
   created_by: string;
@@ -180,6 +189,19 @@ export interface AdminAction {
   metadata: Record<string, unknown>;
   created_at: string;
   admin?: Profile;
+}
+
+export type ConnectionStatus = "pending" | "accepted" | "rejected" | "skipped";
+
+export interface Connection {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  status: ConnectionStatus;
+  created_at: string;
+  updated_at: string;
+  sender?: Profile;
+  receiver?: Profile;
 }
 
 // Supabase Database type map

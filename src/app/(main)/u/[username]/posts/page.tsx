@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PostFeed } from "@/components/feed/PostFeed";
+import { BackButton } from "@/components/layout/BackButton";
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -14,12 +15,17 @@ export default async function UserPostsPage({ params }: Props) {
 
   const { data: posts } = await supabase
     .from("posts")
-    .select(`*, author:profiles!author_id(id, username, display_name, avatar_url, role, is_verified)`)
+    .select(`*, author:profiles!author_id(id, username, display_name, avatar_url, avatar_emoji, role, is_verified)`)
     .eq("author_id", profile.id)
     .eq("visibility", "public")
     .eq("is_hidden", false)
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
-  return <PostFeed posts={posts ?? []} />;
+  return (
+    <div className="space-y-4">
+      <BackButton href={`/u/${username}`} label={`@${username}`} />
+      <PostFeed posts={posts ?? []} />
+    </div>
+  );
 }

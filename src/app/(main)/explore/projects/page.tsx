@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { BackButton } from "@/components/layout/BackButton";
 
 export const metadata: Metadata = {
   title: "Esplora progetti",
@@ -37,25 +38,28 @@ export default async function ExploreProjectsPage({
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-black">Progetti</h1>
+      <div className="flex items-center gap-2">
+        <BackButton href="/explore" />
+        <h1 className="text-xl font-bold" style={{ color: "var(--fg)" }}>Progetti</h1>
+      </div>
       <div className="space-y-3">
         {(projects ?? []).map((p) => (
-          <div key={p.id} className="bg-white rounded-xl border border-black/6 p-4 hover:border-black/15 transition-colors">
+          <div key={p.id} className="rounded-xl border p-4 transition-colors" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
             <div className="flex items-start justify-between gap-2">
-              <div>
-                <h2 className="font-semibold text-black">{p.name}</h2>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold" style={{ color: "var(--fg)" }}>{p.name}</h2>
                 {p.description && (
-                  <p className="text-sm text-black/55 mt-1 line-clamp-2">{p.description}</p>
+                  <p className="text-sm mt-1 line-clamp-2" style={{ color: "var(--muted)" }}>{p.description}</p>
                 )}
               </div>
-              <span className="text-xs bg-black/5 text-black/60 px-2 py-1 rounded-full whitespace-nowrap">
+              <span className="text-xs px-2 py-1 rounded-full whitespace-nowrap shrink-0" style={{ background: "var(--surface)", color: "var(--muted)" }}>
                 {stageLabels[p.stage] ?? p.stage}
               </span>
             </div>
             {p.looking_for?.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-3">
                 {p.looking_for.map((r: string) => (
-                  <span key={r} className="text-xs bg-black/4 text-black/55 px-2 py-0.5 rounded-full">
+                  <span key={r} className="text-xs px-2 py-0.5 rounded-full" style={{ background: "var(--surface)", color: "var(--muted)" }}>
                     cercasi {r}
                   </span>
                 ))}
@@ -64,7 +68,7 @@ export default async function ExploreProjectsPage({
           </div>
         ))}
         {!projects?.length && (
-          <p className="text-center text-black/40 py-12">Nessun progetto trovato.</p>
+          <p className="text-center py-12" style={{ color: "var(--muted)" }}>Nessun progetto trovato.</p>
         )}
       </div>
     </div>

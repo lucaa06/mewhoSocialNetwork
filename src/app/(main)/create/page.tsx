@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CreatePostForm } from "@/components/feed/CreatePostForm";
+import { BackButton } from "@/components/layout/BackButton";
 
 export const metadata: Metadata = {
   title: "Nuovo post",
@@ -15,7 +16,10 @@ export default async function CreatePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-xl font-bold text-black mb-4">Crea un post</h1>
+      <div className="flex items-center gap-2 mb-4">
+        <BackButton href="/" />
+        <h1 className="text-xl font-bold" style={{ color: "var(--fg)" }}>Crea un post</h1>
+      </div>
       <CreatePostForm />
     </div>
   );

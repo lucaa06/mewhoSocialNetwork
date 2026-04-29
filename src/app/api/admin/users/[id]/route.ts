@@ -5,7 +5,7 @@ import type { AdminActionType } from "@/types/database";
 
 const ALLOWED_ACTIONS: AdminActionType[] = [
   "remove_avatar", "suspend_user", "unsuspend_user", "ban_user",
-  "unban_user", "verify_user",
+  "unban_user", "verify_user", "assign_beta", "revoke_beta",
 ];
 
 export async function POST(
@@ -38,6 +38,11 @@ export async function POST(
     return NextResponse.json({ error: "Reason required" }, { status: 400 });
   }
 
+  // Prevent self-assignment of beta role
+  if ((action === "assign_beta" || action === "revoke_beta") && targetId === user.id) {
+    return NextResponse.json({ error: "Non puoi modificare il tuo stesso stato beta" }, { status: 403 });
+  }
+
   const adminClient = createAdminClient();
 
   // Apply the action
@@ -47,7 +52,9 @@ export async function POST(
   if (action === "unsuspend_user") updates.is_suspended = false;
   if (action === "ban_user") { updates.is_banned = true; updates.is_suspended = false; }
   if (action === "unban_user") updates.is_banned = false;
-  if (action === "verify_user") updates.is_verified = true;
+  if (action === "verify_user")    updates.is_verified  = true;
+  if (action === "assign_beta")    updates.is_beta      = true;
+  if (action === "revoke_beta")    updates.is_beta      = false;
 
   const { error } = await adminClient
     .from("profiles")
@@ -63,6 +70,7 @@ export async function POST(
     target_type: "user",
     target_id: targetId,
     reason,
+    metadata: {},
   });
 
   return NextResponse.json({ ok: true });

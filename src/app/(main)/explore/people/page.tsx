@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileCard } from "@/components/profile/ProfileCard";
+import { BackButton } from "@/components/layout/BackButton";
 
 export const metadata: Metadata = {
   title: "Esplora persone",
@@ -34,13 +35,16 @@ export default async function ExplorePeoplePage({
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-black">Persone</h1>
+      <div className="flex items-center gap-2">
+        <BackButton href="/explore" />
+        <h1 className="text-xl font-bold" style={{ color: "var(--fg)" }}>Persone</h1>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {(profiles ?? []).map((p) => (
           <ProfileCard key={p.id} profile={p} />
         ))}
         {!profiles?.length && (
-          <p className="col-span-2 text-center text-black/40 py-12">Nessun risultato.</p>
+          <p className="col-span-2 text-center py-12" style={{ color: "var(--muted)" }}>Nessun risultato.</p>
         )}
       </div>
     </div>

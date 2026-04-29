@@ -1,0 +1,39 @@
+2026-04-28T15:26:08.710Z INFO Is remote: false
+2026-04-28T15:26:08.710Z INFO Starting Local. Installation path: /home/luca/Scrivania/websites/e-commerce
+2026-04-28T15:26:08.710Z INFO [MainProvider] Creating new MainProvider instance...
+2026-04-28T15:26:08.711Z INFO [TabsManager] Code view listener set up at initialization
+2026-04-28T15:26:08.711Z INFO Installation path exists: /home/luca/Scrivania/websites/e-commerce
+2026-04-28T15:26:08.712Z INFO Initializing database with URL: file:/home/luca/Scrivania/websites/e-commerce/pythagora-core/data/database/pythagora.db
+2026-04-28T15:26:08.713Z INFO Database file exists, skipping prisma generate/push for faster startup
+2026-04-28T15:26:08.714Z INFO Database initialized successfully
+2026-04-28T15:26:08.714Z INFO [Migration] Checking for database migration...
+2026-04-28T15:26:08.819Z INFO [Migration] No migration needed
+2026-04-28T15:26:12.436Z INFO Closing entire Pythagora extension...
+2026-04-28T15:26:12.437Z ERROR Error closing extension
+Error: Canceled
+Stack: Canceled: Canceled
+	at new EI (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:407:148434)
+	at r._remoteCall (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:407:154486)
+	at i.<computed>.s.charCodeAt.i.<computed> (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:407:151281)
+	at cg._doExecuteCommand (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:501:48120)
+	at cg.executeCommand (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:501:47567)
+	at Object.executeCommand (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:609:135586)
+	at closeEntirePythagoraExtension (/home/luca/.vscode/extensions/pythagoratechnologies.pythagora-vs-code-2.6.19/out/extension.js:542:31)
+	at Object.deactivate (/home/luca/.vscode/extensions/pythagoratechnologies.pythagora-vs-code-2.6.19/out/extension.js:409:15)
+	at Pk._deactivate (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:505:14479)
+	at file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:505:12006
+	at Array.map (<anonymous>)
+	at Pk._deactivateAll (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:505:11994)
+	at Pk.terminate (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:505:12345)
+	at r.terminate (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:507:1072)
+	at Vs (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:801:11700)
+	at ju.value (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:801:9847)
+	at T._deliver (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:403:3043)
+	at T.fire (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:403:3361)
+	at Xi.fire (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:405:8437)
+	at MessagePortMain.<anonymous> (file:///usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:801:8082)
+	at MessagePortMain.emit (node:events:519:28)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2959)
+Extra context: {
+  "message": "Canceled"
+}

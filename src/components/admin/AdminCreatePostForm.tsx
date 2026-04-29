@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { adminCreatePost } from "@/app/actions/admin";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { celebrate } from "@/lib/celebrate";
 
 const CATEGORIES = ["Startup", "Ricerca", "Tecnologia", "Design", "Business", "Sociale", "Altro"];
 
@@ -17,7 +18,7 @@ export function AdminCreatePostForm() {
     if (!form.content.trim()) return;
     startTransition(async () => {
       await adminCreatePost(form);
-      toast.success("Post pubblicato");
+      toast.success("Post pubblicato"); celebrate();
       setForm({ title: "", content: "", category: "" });
       router.push("/admin/posts");
     });
@@ -50,7 +51,7 @@ export function AdminCreatePostForm() {
       </div>
       <button type="submit" disabled={isPending || !form.content.trim()}
         className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-40"
-        style={{ background: "#DD4132" }}>
+        style={{ background: "#FF4A24" }}>
         {isPending ? "Pubblicando..." : "Pubblica post"}
       </button>
     </form>

@@ -36,6 +36,33 @@ export function ReportForm({ defaultTargetType, defaultTargetId }: ReportFormPro
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { toast.error("Devi essere loggato per segnalare"); return; }
+
+    // Enforce max 3 reports per target (for user reports)
+    if (data.target_type === "user") {
+      const { count } = await supabase
+        .from("reports")
+        .select("*", { count: "exact", head: true })
+        .eq("target_id", data.target_id)
+        .eq("target_type", "user")
+        .in("status", ["pending", "reviewed"]);
+      if ((count ?? 0) >= 3) {
+        toast.info("Questo account ha già ricevuto il numero massimo di segnalazioni in revisione.");
+        return;
+      }
+    }
+
+    // Check: this user hasn't already reported this target
+    const { count: alreadyReported } = await supabase
+      .from("reports")
+      .select("*", { count: "exact", head: true })
+      .eq("reporter_id", user.id)
+      .eq("target_id", data.target_id)
+      .eq("target_type", data.target_type);
+    if ((alreadyReported ?? 0) > 0) {
+      toast.info("Hai già segnalato questo contenuto.");
+      return;
+    }
+
     const { error } = await supabase.from("reports").insert({ reporter_id: user.id, ...data });
     if (error) { toast.error("Errore durante la segnalazione"); return; }
     setSubmitted(true);

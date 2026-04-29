@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils";
+import { BackButton } from "@/components/layout/BackButton";
+import { NotificationList } from "@/components/notifications/NotificationList";
 
 export const metadata: Metadata = {
   title: "Notifiche",
@@ -18,8 +19,9 @@ export default async function NotificationsPage() {
     .select("*")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(60);
 
+  // Mark all as read
   await supabase
     .from("notifications")
     .update({ is_read: true })
@@ -27,22 +29,14 @@ export default async function NotificationsPage() {
     .eq("is_read", false);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-2">
-      <h1 className="text-xl font-bold text-black mb-4">Notifiche</h1>
-      {(notifications ?? []).length === 0 && (
-        <p className="text-center text-black/40 py-12">Nessuna notifica.</p>
-      )}
-      {(notifications ?? []).map((n) => (
-        <div
-          key={n.id}
-          className={`bg-white rounded-xl border p-4 ${
-            !n.is_read ? "border-black/20 bg-black/2" : "border-black/6"
-          }`}
-        >
-          <p className="text-sm text-black">{String(n.type)}</p>
-          <p className="text-xs text-black/35 mt-1">{formatDate(n.created_at)}</p>
-        </div>
-      ))}
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <BackButton href="/" />
+        <h1 className="text-xl font-bold" style={{ color: "var(--fg)", fontFamily: "var(--fh)" }}>
+          Notifiche
+        </h1>
+      </div>
+      <NotificationList notifications={notifications ?? []} />
     </div>
   );
 }

@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
+import { NotificationToggles } from "@/components/settings/NotificationToggles";
 
-export const metadata: Metadata = { title: "Impostazioni notifiche" };
+export const metadata: Metadata = { title: "Notifiche" };
 
 export default function NotificationsSettingsPage() {
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-black mb-4">Notifiche</h2>
-      <p className="text-sm text-black/50">
-        Configura quali notifiche vuoi ricevere via email e in app.
-      </p>
+    <div className="space-y-6">
+      <h2 className="text-lg font-semibold text-black">Notifiche</h2>
+      <NotificationToggles />
     </div>
   );
 }

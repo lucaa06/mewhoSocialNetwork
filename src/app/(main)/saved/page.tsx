@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PostFeed } from "@/components/feed/PostFeed";
+import { BackButton } from "@/components/layout/BackButton";
 
 export const metadata: Metadata = {
   title: "Salvati",
@@ -14,13 +15,14 @@ export default async function SavedPage() {
   if (!user) redirect("/login");
 
   const { data } = await supabase
-    .from("saved_posts")
+    .from("reactions")
     .select(`
       post:posts(
-        *, author:profiles!author_id(id, username, display_name, avatar_url, role, is_verified)
+        *, author:profiles!author_id(id, username, display_name, avatar_url, avatar_emoji, role, is_verified)
       )
     `)
     .eq("user_id", user.id)
+    .eq("type", "idea")
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -28,7 +30,10 @@ export default async function SavedPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
-      <h1 className="text-xl font-bold text-black">Post salvati</h1>
+      <div className="flex items-center gap-2 mb-1">
+        <BackButton href="/" />
+        <h1 className="text-xl font-bold" style={{ color: "var(--fg)" }}>Post salvati</h1>
+      </div>
       <PostFeed posts={posts as never[]} />
       {posts.length === 0 && (
         <p className="text-center text-black/40 py-12">Nessun post salvato.</p>

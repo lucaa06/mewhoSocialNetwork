@@ -17,7 +17,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().email("Email non valida"),
+  identifier: z.string().min(1, "Campo obbligatorio"),
   password: z.string().min(1, "Campo obbligatorio"),
 });
 
@@ -30,10 +30,10 @@ export const postSchema = z.object({
 });
 
 export const profileUpdateSchema = z.object({
-  display_name: z.string().min(2).max(50),
+  display_name: z.string().min(2, "Minimo 2 caratteri").max(50),
   bio: z.string().max(300).optional(),
-  role: z.enum(["user", "startupper", "researcher"]),
-  country_code: z.string().length(2).optional(),
+  role: z.enum(["user", "startupper", "researcher", "admin"] as const),
+  country_code: z.preprocess(v => (v === "" ? undefined : v), z.string().length(2).optional()),
   city: z.string().max(100).optional(),
 });
 

@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -18,7 +19,17 @@ const config: Config = {
         white: "#ffffff",
       },
       borderRadius: {
-        "4xl": "2rem",
+        /* Squircle-inspired scale — rounder than default Tailwind */
+        none:    "0",
+        sm:      "0.375rem",   /* 6px  */
+        DEFAULT: "0.625rem",   /* 10px */
+        md:      "0.875rem",   /* 14px */
+        lg:      "1.125rem",   /* 18px */
+        xl:      "1.375rem",   /* 22px */
+        "2xl":   "1.75rem",    /* 28px */
+        "3xl":   "2.25rem",    /* 36px */
+        "4xl":   "3rem",       /* 48px */
+        full:    "9999px",
       },
       backdropBlur: {
         xs: "4px",

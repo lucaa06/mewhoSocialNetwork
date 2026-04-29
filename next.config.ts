@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",
@@ -33,8 +36,10 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              `img-src 'self' data: blob: https://*.supabase.co`,
-              `connect-src 'self' https://*.supabase.co wss://*.supabase.co`,
+              "img-src 'self' data: blob: https://*.supabase.co",
+              "media-src 'self' blob:",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://accounts.google.com",
+              "frame-src https://*.supabase.co https://accounts.google.com",
               "frame-ancestors 'none'",
             ].join("; "),
           },

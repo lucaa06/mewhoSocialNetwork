@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { PostFeed } from "@/components/feed/PostFeed";
+import { ProfilePostTabs } from "@/components/profile/ProfilePostTabs";
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -47,7 +47,7 @@ export default async function ProfilePage({ params }: Props) {
     await Promise.all([
       supabase
         .from("posts")
-        .select(`*, author:profiles!author_id(id, username, display_name, avatar_url, role, is_verified)`)
+        .select(`*, author:profiles!author_id(id, username, display_name, avatar_url, avatar_emoji, role, is_verified)`)
         .eq("author_id", profile.id)
         .eq("visibility", "public")
         .eq("is_hidden", false)
@@ -64,14 +64,50 @@ export default async function ProfilePage({ params }: Props) {
         .eq("follower_id", profile.id),
     ]);
 
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  const isOwn = currentUser?.id === profile.id;
+
+  const postAuthorSelect = `*, author:profiles!author_id(id, username, display_name, avatar_url, avatar_emoji, role, is_verified)`;
+
+  // Only fetch liked/saved for own profile
+  const [likedResult, savedResult] = isOwn
+    ? await Promise.all([
+        supabase
+          .from("reactions")
+          .select(`post:posts(${postAuthorSelect})`)
+          .eq("user_id", profile.id)
+          .eq("type", "like")
+          .order("created_at", { ascending: false })
+          .limit(30),
+        supabase
+          .from("reactions")
+          .select(`post:posts(${postAuthorSelect})`)
+          .eq("user_id", profile.id)
+          .eq("type", "idea")
+          .order("created_at", { ascending: false })
+          .limit(30),
+      ])
+    : [{ data: null }, { data: null }];
+
+  const likedPosts = (likedResult.data ?? []).map((r: { post: unknown }) => r.post).filter(Boolean) as never[];
+  const savedPosts = (savedResult.data ?? []).map((r: { post: unknown }) => r.post).filter(Boolean) as never[];
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <ProfileHeader
         profile={profile}
         followersCount={followersCount ?? 0}
         followingCount={followingCount ?? 0}
+        postsCount={posts?.length ?? 0}
+        isOwn={isOwn}
       />
-      <PostFeed posts={posts ?? []} />
+
+      <ProfilePostTabs
+        posts={posts ?? []}
+        likedPosts={likedPosts}
+        savedPosts={savedPosts}
+        isOwn={isOwn}
+      />
     </div>
   );
 }
