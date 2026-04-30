@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Send, Palette, Check, CheckCheck, Lock, Clock } from "lucide-react";
+import { ArrowLeft, Send, Palette, Check, CheckCheck, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getOrCreateKeyPair, encryptMessage, decryptMessage } from "@/lib/e2e";
 import { getAvatarFallback } from "@/lib/utils";
@@ -13,13 +13,15 @@ interface Profile { id: string; username: string; display_name: string; avatar_u
 interface RawMessage { id: string; conversation_id: string; sender_id: string; ciphertext: string; iv: string; created_at: string; is_deleted: boolean }
 interface DecryptedMessage extends RawMessage { text: string }
 
-const THEMES: Record<string, { label: string; bg: string; sentBg: string; receivedBg: string; sentText: string; receivedText: string }> = {
-  default:  { label: "Default",  bg: "var(--bg)",   sentBg: "#111",      receivedBg: "var(--card)", sentText: "#fff", receivedText: "var(--fg)" },
-  night:    { label: "Notte",    bg: "#0d0d14",     sentBg: "#FF4A24",   receivedBg: "#1a1a28",     sentText: "#fff", receivedText: "#e0e0f0" },
-  forest:   { label: "Foresta",  bg: "#0d1a0d",     sentBg: "#16a34a",   receivedBg: "#152315",     sentText: "#fff", receivedText: "#c0e0c0" },
-  ocean:    { label: "Oceano",   bg: "#0a0f1e",     sentBg: "#2563eb",   receivedBg: "#0f1929",     sentText: "#fff", receivedText: "#c0d0f0" },
-  sunset:   { label: "Tramonto", bg: "#1a0e0a",     sentBg: "#FF4A24",   receivedBg: "#221510",     sentText: "#fff", receivedText: "#f0d0c0" },
-  lavender: { label: "Lavanda",  bg: "var(--bg)",   sentBg: "#7c3aed",   receivedBg: "var(--card)", sentText: "#fff", receivedText: "var(--fg)" },
+const THEMES: Record<string, { label: string; swatch: string; bg: string; sentBg: string; receivedBg: string; sentText: string; receivedText: string }> = {
+  default:  { label: "Default",  swatch: "#111111",  bg: "var(--bg)",   sentBg: "#111",      receivedBg: "var(--card)", sentText: "#fff", receivedText: "var(--fg)" },
+  night:    { label: "Notte",    swatch: "#FF4A24",  bg: "#0d0d14",     sentBg: "#FF4A24",   receivedBg: "#1e1e2e",     sentText: "#fff", receivedText: "#e8e8ff" },
+  forest:   { label: "Foresta",  swatch: "#16a34a",  bg: "#0a160a",     sentBg: "#16a34a",   receivedBg: "#111d11",     sentText: "#fff", receivedText: "#d0f0d0" },
+  ocean:    { label: "Oceano",   swatch: "#2563eb",  bg: "#070d1e",     sentBg: "#2563eb",   receivedBg: "#0c1530",     sentText: "#fff", receivedText: "#c8d8ff" },
+  sunset:   { label: "Tramonto", swatch: "#f97316",  bg: "#130a04",     sentBg: "#f97316",   receivedBg: "#1e1108",     sentText: "#fff", receivedText: "#fde8cc" },
+  lavender: { label: "Lavanda",  swatch: "#7c3aed",  bg: "#0e0a1a",     sentBg: "#7c3aed",   receivedBg: "#160f28",     sentText: "#fff", receivedText: "#e0d0ff" },
+  rose:     { label: "Rosa",     swatch: "#e11d48",  bg: "#150509",     sentBg: "#e11d48",   receivedBg: "#200810",     sentText: "#fff", receivedText: "#ffd0da" },
+  mint:     { label: "Menta",    swatch: "#0d9488",  bg: "#041210",     sentBg: "#0d9488",   receivedBg: "#081a18",     sentText: "#fff", receivedText: "#c0f0ec" },
 };
 
 function RainbowLink({ href, text }: { href: string; text: string }) {
@@ -87,6 +89,7 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
     supabase.from("messages").select("*").eq("conversation_id", conversationId).order("created_at", { ascending: true })
       .then(async ({ data }) => {
         const decrypted = await Promise.all((data ?? []).map(async (m: RawMessage) => {
+          if (m.iv === "PLAIN") return { ...m, text: m.ciphertext };
           const isMine = m.sender_id === currentUserId;
           const theirKey = isMine ? otherPubKey : (otherPublicKeyJwk ?? otherPubKey);
           if (!theirKey) return { ...m, text: "🔒" };
@@ -103,9 +106,14 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
         async (payload) => {
           const m = payload.new as RawMessage;
-          const isMine = m.sender_id === currentUserId;
-          const theirKey = isMine ? otherPubKey : (otherPublicKeyJwk ?? otherPubKey);
-          const text = theirKey ? await decryptMessage(m.ciphertext, m.iv, keyPair.privateJwk, theirKey).catch(() => "🔒") : "🔒";
+          let text: string;
+          if (m.iv === "PLAIN") {
+            text = m.ciphertext;
+          } else {
+            const isMine = m.sender_id === currentUserId;
+            const theirKey = isMine ? otherPubKey : (otherPublicKeyJwk ?? otherPubKey);
+            text = theirKey ? await decryptMessage(m.ciphertext, m.iv, keyPair.privateJwk, theirKey).catch(() => "🔒") : "🔒";
+          }
           setMessages(prev => [...prev, { ...m, text }]);
           setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
         })
@@ -116,14 +124,26 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault();
     const text = input.trim();
-    if (!text || !keyPair || !otherPubKey) return;
+    if (!text || !keyPair) return;
     setInput("");
-    startTransition(async () => {
-      const { ciphertext, iv } = await encryptMessage(text, keyPair.privateJwk, otherPubKey);
+
+    // Try to get other user's key one more time if still missing
+    let pubKey = otherPubKey;
+    if (!pubKey && otherUser) {
       const supabase = createClient();
+      const { data } = await supabase.from("user_public_keys").select("public_key_jwk").eq("user_id", otherUser.id).single();
+      if (data) { pubKey = data.public_key_jwk as JsonWebKey; setOtherPubKey(pubKey); }
+    }
+
+    const supabase = createClient();
+    if (pubKey) {
+      const { ciphertext, iv } = await encryptMessage(text, keyPair.privateJwk, pubKey);
       await supabase.from("messages").insert({ conversation_id: conversationId, sender_id: currentUserId, ciphertext, iv });
-      await supabase.from("conversations").update({ last_message_at: new Date().toISOString() }).eq("id", conversationId);
-    });
+    } else {
+      // Store plaintext when key unavailable (marked with special IV)
+      await supabase.from("messages").insert({ conversation_id: conversationId, sender_id: currentUserId, ciphertext: text, iv: "PLAIN" });
+    }
+    await supabase.from("conversations").update({ last_message_at: new Date().toISOString() }).eq("id", conversationId);
   }
 
   async function changeTheme(newTheme: string) {
@@ -181,15 +201,28 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
             <Palette className="w-4 h-4" />
           </button>
           {showThemes && (
-            <div className="absolute right-0 top-10 rounded-2xl border shadow-lg py-2 z-20 min-w-[140px]"
+            <div className="absolute right-0 top-10 rounded-2xl border shadow-lg p-3 z-20 w-[200px]"
               style={{ background: "var(--card)", borderColor: "var(--border)" }}>
-              {Object.entries(THEMES).map(([key, val]) => (
-                <button key={key} onClick={() => changeTheme(key)}
-                  className="w-full flex items-center justify-between px-4 py-2 text-sm transition-colors hover:opacity-80">
-                  <span style={{ color: theme === key ? "var(--accent)" : "var(--fg)", fontWeight: theme === key ? 600 : 400 }}>{val.label}</span>
-                  {theme === key && <Check className="w-3.5 h-3.5" style={{ color: "var(--accent)" }} />}
-                </button>
-              ))}
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-2 px-1" style={{ color: "var(--subtle)" }}>Tema chat</p>
+              <div className="grid grid-cols-4 gap-2">
+                {Object.entries(THEMES).map(([key, val]) => (
+                  <button key={key} onClick={() => changeTheme(key)}
+                    title={val.label}
+                    className="flex flex-col items-center gap-1 group">
+                    <div className="w-10 h-10 rounded-xl transition-all"
+                      style={{
+                        background: val.swatch,
+                        outline: theme === key ? "2px solid var(--accent)" : "2px solid transparent",
+                        outlineOffset: 2,
+                        transform: theme === key ? "scale(1.1)" : "scale(1)",
+                      }} />
+                    <span className="text-[9px] truncate w-full text-center"
+                      style={{ color: theme === key ? "var(--accent)" : "var(--subtle)", fontWeight: theme === key ? 700 : 400 }}>
+                      {val.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -238,34 +271,24 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
         className="shrink-0 px-3 py-3 flex gap-2 items-end"
         style={{ background: t.bg, borderTop: "1px solid var(--border)" }}>
 
-        {!otherPubKey ? (
-          <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-2xl" style={{ background: "var(--surface)" }}>
-            <Clock className="w-4 h-4 shrink-0" style={{ color: "var(--muted)" }} />
-            <p className="text-xs" style={{ color: "var(--muted)" }}>
-              {otherUser
-                ? `${otherUser.display_name} non ha ancora aperto la chat — manda prima un saluto dopo che entra`
-                : "In attesa che l'altro utente apra la chat…"}
-            </p>
-          </div>
-        ) : (
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="Scrivi un messaggio…"
-            className="flex-1 px-4 py-2.5 rounded-2xl text-sm focus:outline-none transition-colors"
-            style={{
-              background: "var(--surface)",
-              border: "1.5px solid var(--border)",
-              color: "var(--fg)",
-            }}
-            onFocus={e => (e.currentTarget.style.borderColor = "var(--accent)")}
-            onBlur={e => (e.currentTarget.style.borderColor = "var(--border)")}
-          />
-        )}
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(e as never); } }}
+          placeholder="Scrivi un messaggio…"
+          className="flex-1 px-4 py-2.5 rounded-2xl text-sm focus:outline-none transition-colors"
+          style={{
+            background: "var(--surface)",
+            border: "1.5px solid var(--border)",
+            color: "var(--fg)",
+          }}
+          onFocus={e => (e.currentTarget.style.borderColor = "var(--accent)")}
+          onBlur={e => (e.currentTarget.style.borderColor = "var(--border)")}
+        />
 
         <button
           type="submit"
-          disabled={!input.trim() || !otherPubKey}
+          disabled={!input.trim() || !keyPair}
           className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-all disabled:opacity-30"
           style={{ background: "var(--accent)" }}>
           <Send className="w-4 h-4 text-white" />
