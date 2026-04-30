@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { ArrowLeft, Send, Palette, Check, CheckCheck, Lock, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getOrCreateKeyPair, encryptMessage, decryptMessage } from "@/lib/e2e";
@@ -150,20 +151,27 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        {otherUser
-          ? <AvatarEl profile={otherUser} size={9} />
-          : <div className="w-9 h-9 rounded-full shrink-0" style={{ background: "var(--surface)" }} />
-        }
-
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate" style={{ color: "var(--fg)" }}>
-            {otherUser?.display_name ?? otherUser?.username ?? "Utente"}
-          </p>
-          <div className="flex items-center gap-1">
-            <Lock className="w-2.5 h-2.5" style={{ color: "var(--subtle)" }} strokeWidth={1.5} />
-            <p className="text-[10px]" style={{ color: "var(--subtle)" }}>Chat cifrata</p>
-          </div>
-        </div>
+        {otherUser ? (
+          <Link href={`/u/${otherUser.username}`} className="flex items-center gap-3 flex-1 min-w-0 group">
+            <AvatarEl profile={otherUser} size={9} />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate group-hover:underline" style={{ color: "var(--fg)" }}>
+                {otherUser.display_name ?? otherUser.username}
+              </p>
+              <div className="flex items-center gap-1">
+                <Lock className="w-2.5 h-2.5" style={{ color: "var(--subtle)" }} strokeWidth={1.5} />
+                <p className="text-[10px]" style={{ color: "var(--subtle)" }}>Chat cifrata</p>
+              </div>
+            </div>
+          </Link>
+        ) : (
+          <>
+            <div className="w-9 h-9 rounded-full shrink-0" style={{ background: "var(--surface)" }} />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate" style={{ color: "var(--fg)" }}>Utente</p>
+            </div>
+          </>
+        )}
 
         {/* Theme picker */}
         <div className="relative">

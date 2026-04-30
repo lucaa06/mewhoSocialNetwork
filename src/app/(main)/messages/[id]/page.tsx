@@ -45,15 +45,13 @@ export default async function ConversationPage({ params }: Props) {
   const conv = (membership.conversation as unknown as { id: string; theme: string });
 
   return (
-    <div className="chat-container -mx-3 sm:-mx-4 lg:-mx-6 -mt-4" style={{ height: "calc(100dvh - 56px)", display: "flex", flexDirection: "column" }}>
-      <ChatView
-        conversationId={id}
-        currentUserId={user.id}
-        otherUser={(otherMember?.profiles as never) ?? null}
-        theme={conv.theme}
-        myPublicKeyJwk={myKey?.public_key_jwk ?? null}
-        otherPublicKeyJwk={otherKey?.public_key_jwk ?? null}
-      />
-    </div>
+    <ChatView
+      conversationId={id}
+      currentUserId={user.id}
+      otherUser={(otherMember?.profiles as never) ?? null}
+      theme={conv.theme}
+      myPublicKeyJwk={myKey?.public_key_jwk ?? null}
+      otherPublicKeyJwk={otherKey?.public_key_jwk ?? null}
+    />
   );
 }
