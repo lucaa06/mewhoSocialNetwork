@@ -114,18 +114,28 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
             const theirKey = isMine ? otherPubKey : (otherPublicKeyJwk ?? otherPubKey);
             text = theirKey ? await decryptMessage(m.ciphertext, m.iv, keyPair.privateJwk, theirKey).catch(() => "🔒") : "🔒";
           }
-          setMessages(prev => [...prev, { ...m, text }]);
+          // Skip if already shown (optimistic update)
+          setMessages(prev => prev.some(x => x.id === m.id) ? prev : [...prev, { ...m, text }]);
           setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
         })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [keyPair, otherPubKey]);
 
-  async function sendMessage(e: React.FormEvent) {
+  async function sendMessage(e: React.FormEvent | React.KeyboardEvent) {
     e.preventDefault();
     const text = input.trim();
     if (!text || !keyPair) return;
     setInput("");
+
+    // Optimistic update — show message immediately
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: DecryptedMessage = {
+      id: tempId, conversation_id: conversationId, sender_id: currentUserId,
+      ciphertext: "", iv: "", created_at: new Date().toISOString(), is_deleted: false, text,
+    };
+    setMessages(prev => [...prev, optimistic]);
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 30);
 
     // Try to get other user's key one more time if still missing
     let pubKey = otherPubKey;
@@ -136,14 +146,21 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
     }
 
     const supabase = createClient();
+    let insertedId: string | null = null;
     if (pubKey) {
       const { ciphertext, iv } = await encryptMessage(text, keyPair.privateJwk, pubKey);
-      await supabase.from("messages").insert({ conversation_id: conversationId, sender_id: currentUserId, ciphertext, iv });
+      const { data } = await supabase.from("messages").insert({ conversation_id: conversationId, sender_id: currentUserId, ciphertext, iv }).select("id").single();
+      insertedId = data?.id ?? null;
     } else {
-      // Store plaintext when key unavailable (marked with special IV)
-      await supabase.from("messages").insert({ conversation_id: conversationId, sender_id: currentUserId, ciphertext: text, iv: "PLAIN" });
+      const { data } = await supabase.from("messages").insert({ conversation_id: conversationId, sender_id: currentUserId, ciphertext: text, iv: "PLAIN" }).select("id").single();
+      insertedId = data?.id ?? null;
     }
     await supabase.from("conversations").update({ last_message_at: new Date().toISOString() }).eq("id", conversationId);
+
+    // Replace temp message with real id once inserted
+    if (insertedId) {
+      setMessages(prev => prev.map(m => m.id === tempId ? { ...m, id: insertedId! } : m));
+    }
   }
 
   async function changeTheme(newTheme: string) {
@@ -274,7 +291,7 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(e as never); } }}
+          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(e); } }}
           placeholder="Scrivi un messaggio…"
           className="flex-1 px-4 py-2.5 rounded-2xl text-sm focus:outline-none transition-colors"
           style={{
