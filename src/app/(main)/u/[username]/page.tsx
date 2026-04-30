@@ -89,8 +89,8 @@ export default async function ProfilePage({ params }: Props) {
       ])
     : [{ data: null }, { data: null }];
 
-  const likedPosts = (likedResult.data ?? []).map((r: { post: unknown }) => r.post).filter(Boolean) as never[];
-  const savedPosts = (savedResult.data ?? []).map((r: { post: unknown }) => r.post).filter(Boolean) as never[];
+  const likedPosts = (likedResult.data ?? []).map((r: { post: unknown }) => r.post).filter(Boolean).filter((p) => !(p as { deleted_at?: string | null }).deleted_at) as never[];
+  const savedPosts = (savedResult.data ?? []).map((r: { post: unknown }) => r.post).filter(Boolean).filter((p) => !(p as { deleted_at?: string | null }).deleted_at) as never[];
 
   return (
     <div className="space-y-5">
