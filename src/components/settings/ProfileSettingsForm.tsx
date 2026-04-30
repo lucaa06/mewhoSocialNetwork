@@ -143,14 +143,16 @@ export function ProfileSettingsForm({ profile }: { profile: Profile | null }) {
         justifyContent: "space-between",
         gap: 12,
         padding: "10px 20px",
+        minWidth: 0,
         transition: "transform 0.22s cubic-bezier(.4,0,.2,1), opacity 0.22s ease",
         transform: hasChanges ? "translateY(0)" : "translateY(-110%)",
         opacity: hasChanges ? 1 : 0,
         pointerEvents: hasChanges ? "auto" : "none",
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: 500, color: "var(--muted)" }}>
-        Hai modifiche non salvate
+      <span style={{ fontSize: 13, fontWeight: 500, color: "var(--muted)", flex: 1, minWidth: 0 }}>
+        <span className="hidden sm:inline">Hai modifiche non salvate</span>
+        <span className="sm:hidden">Modifiche</span>
       </span>
       <button
         type="button"

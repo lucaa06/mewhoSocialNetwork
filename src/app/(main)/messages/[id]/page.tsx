@@ -1,4 +1,5 @@
 import { redirect, notFound } from "next/navigation";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { ChatView } from "@/components/messages/ChatView";
 
@@ -45,14 +46,16 @@ export default async function ConversationPage({ params }: Props) {
   const conv = (membership.conversation as unknown as { id: string; theme: string });
 
   return (
-    <ChatView
-      conversationId={id}
-      currentUserId={user.id}
-      otherUser={(otherMember?.profiles as never) ?? null}
-      theme={conv.theme}
-      myPublicKeyJwk={myKey?.public_key_jwk ?? null}
-      otherPublicKeyJwk={otherKey?.public_key_jwk ?? null}
-      otherLastReadAt={otherMember?.last_read_at ?? null}
-    />
+    <Suspense>
+      <ChatView
+        conversationId={id}
+        currentUserId={user.id}
+        otherUser={(otherMember?.profiles as never) ?? null}
+        theme={conv.theme}
+        myPublicKeyJwk={myKey?.public_key_jwk ?? null}
+        otherPublicKeyJwk={otherKey?.public_key_jwk ?? null}
+        otherLastReadAt={otherMember?.last_read_at ?? null}
+      />
+    </Suspense>
   );
 }

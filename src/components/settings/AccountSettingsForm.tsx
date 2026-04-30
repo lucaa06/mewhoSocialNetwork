@@ -112,12 +112,12 @@ export function AccountSettingsForm({ profile, email }: { profile: Profile | nul
 
       <div>
         <p className="label-xs mb-3">Tema</p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-1.5">
           {THEMES.map(({ value, label, icon: Icon }) => {
             const active = theme === value;
             return (
               <button key={value} type="button" onClick={() => setTheme(value)}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all"
+                className="flex flex-col items-center gap-2 p-2 sm:p-4 rounded-2xl border-2 transition-all"
                 style={{
                   borderColor: active ? "var(--accent)" : "var(--border-strong)",
                   background: active ? "var(--accent-soft)" : "var(--card)",

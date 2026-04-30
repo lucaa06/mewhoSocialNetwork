@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, Sparkles, Search, FileText, Users, ArrowLeft, RotateCcw } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
@@ -24,6 +24,21 @@ export function AiChat({ userId }: { userId: string | null }) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  // Pre-fill when a post is shared via URL param
+  useEffect(() => {
+    const shareId = searchParams.get("share");
+    if (!shareId) return;
+    const title = searchParams.get("title");
+    const url = `https://mewho.it/post/${shareId}`;
+    const msg = title
+      ? `Ho trovato questo post interessante: "${title}" — ${url} — cosa ne pensi?`
+      : `Ho trovato questo post interessante: ${url} — cosa ne pensi?`;
+    setInput(msg);
+    router.replace(pathname);
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

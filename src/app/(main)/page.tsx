@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+
+export const revalidate = 30; // Cache SSR feed for 30s — reduces DB load
 import { createClient } from "@/lib/supabase/server";
 import { getServerGeo } from "@/lib/geo";
 import { PostFeed } from "@/components/feed/PostFeed";

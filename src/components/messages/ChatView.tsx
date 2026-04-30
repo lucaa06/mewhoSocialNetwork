@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Send, Palette, Check, CheckCheck, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -75,6 +75,8 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
   otherLastReadAt: string | null;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [messages, setMessages] = useState<DecryptedMessage[]>([]);
   const [input, setInput] = useState("");
   const [theme, setTheme] = useState(initialTheme || "default");
@@ -85,6 +87,19 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
   const [, startTransition] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
   const t = THEMES[theme] ?? THEMES.default;
+
+  // Pre-fill input when a post is shared via URL param
+  useEffect(() => {
+    const shareId = searchParams.get("share");
+    if (!shareId) return;
+    const title = searchParams.get("title");
+    const url = `https://mewho.it/post/${shareId}`;
+    const msg = title
+      ? `📎 Post condiviso: ${title} — ${url}`
+      : `📎 Post condiviso: senza titolo — ${url}`;
+    setInput(msg);
+    router.replace(pathname);
+  }, []);
 
   useEffect(() => {
     (async () => {

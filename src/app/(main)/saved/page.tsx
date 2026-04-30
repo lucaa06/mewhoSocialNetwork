@@ -26,7 +26,7 @@ export default async function SavedPage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
-  const posts = (data ?? []).map((d) => d.post).filter(Boolean);
+  const posts = (data ?? []).map((d) => d.post).filter(Boolean).filter((p) => !(p as { deleted_at?: string | null }).deleted_at);
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">

@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, MessageCircle, Bookmark, Flag, MoreHorizontal } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Flag, MoreHorizontal, Share2 } from "lucide-react";
 import type { Post } from "@/types/database";
 import { formatDate, getAvatarFallback } from "@/lib/utils";
 import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toggleLike, toggleSave } from "@/app/actions/posts";
+import { SharePostModal } from "@/components/messages/SharePostModal";
 
 const ROLE_COLOR: Record<string, string> = {
   startupper: "#FF4A24",
@@ -24,6 +25,7 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
   const [liked, setLiked] = useState(post.user_reaction === "like");
   const [likeCount, setLikeCount] = useState(post.reactions_count ?? 0);
   const [saved, setSaved] = useState(post.user_reaction === "idea");
+  const [showShareModal, setShowShareModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const contentRef = useRef<HTMLParagraphElement>(null);
@@ -279,8 +281,23 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
               fill={saved ? "var(--accent)" : "none"}
             />
           </button>
+          <button
+            onClick={() => setShowShareModal(true)}
+            className="min-h-[36px] px-1 transition-colors"
+            style={{ color: "var(--subtle)" }}
+          >
+            <Share2 className="w-4 h-4" strokeWidth={1.7} />
+          </button>
         </div>
       </div>
+
+      {showShareModal && (
+        <SharePostModal
+          postId={post.id}
+          postTitle={post.title ?? null}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
     </article>
   );
 }
