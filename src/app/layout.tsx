@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { SplashScreen } from "@/components/providers/SplashScreen";
@@ -84,6 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Toaster position="bottom-center" richColors />
         </ThemeProvider>
       </body>
+      <GoogleAnalytics gaId="G-T2RZCRXN6K" />
     </html>
   );
 }

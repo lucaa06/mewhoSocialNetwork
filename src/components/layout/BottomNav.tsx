@@ -13,6 +13,9 @@ interface BottomNavProps {
 export function BottomNav({ user, unreadCount = 0 }: BottomNavProps) {
   const pathname = usePathname();
 
+  // Hide in individual chat pages so keyboard doesn't push nav up
+  if (/^\/messages\/.+/.test(pathname)) return null;
+
   const items = [
     { href: "/",                                     icon: Home,          label: "Home"      },
     { href: "/community",                            icon: Users2,        label: "Community" },

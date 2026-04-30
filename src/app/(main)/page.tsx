@@ -31,8 +31,9 @@ export default async function HomePage({
     .eq("id", user.id)
     .single();
 
-  const country = params.country ?? geo.country_code ?? undefined;
-  const city    = params.city ?? geo.city ?? undefined;
+  // Geo filter is opt-in only (URL param) — auto-detection would hide posts without geo data
+  const country = params.country ?? undefined;
+  const city    = params.city ?? undefined;
   const tab     = params.tab ?? "all";
 
   let posts: Record<string, unknown>[] | null = null;

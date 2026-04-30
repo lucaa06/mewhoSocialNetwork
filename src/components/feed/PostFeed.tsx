@@ -8,9 +8,9 @@ export function PostFeed({ posts, emptyMessage, isLoggedIn }: {
 }) {
   if (posts.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-black/6 p-14 text-center">
-        <p className="text-black/35 text-sm">{emptyMessage ?? "Nessun post ancora."}</p>
-        {!emptyMessage && <p className="text-black/20 text-xs mt-1">Sii il primo a condividere un&apos;idea.</p>}
+      <div className="rounded-2xl border p-14 text-center" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
+        <p className="text-sm" style={{ color: "var(--muted)" }}>{emptyMessage ?? "Nessun post ancora."}</p>
+        {!emptyMessage && <p className="text-xs mt-1" style={{ color: "var(--subtle)" }}>Sii il primo a condividere un&apos;idea.</p>}
       </div>
     );
   }
