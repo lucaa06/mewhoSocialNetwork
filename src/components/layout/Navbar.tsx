@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Plus, Bell, LayoutDashboard, Settings } from "lucide-react";
+import { Search, Plus, Bell, MessageCircle, LayoutDashboard, Settings } from "lucide-react";
 import type { Profile } from "@/types/database";
 import { getAvatarFallback } from "@/lib/utils";
 import { SearchBox } from "./SearchBox";
@@ -9,9 +9,10 @@ import { SearchBox } from "./SearchBox";
 interface NavbarProps {
   user: Pick<Profile, "id" | "username" | "display_name" | "avatar_url" | "avatar_emoji" | "role"> | null;
   unreadCount?: number;
+  unreadMessages?: number;
 }
 
-export function Navbar({ user, unreadCount = 0 }: NavbarProps) {
+export function Navbar({ user, unreadCount = 0, unreadMessages = 0 }: NavbarProps) {
   return (
     <header
       className="fixed top-0 left-0 right-0 z-50 h-14 backdrop-blur-xl"
@@ -70,7 +71,7 @@ export function Navbar({ user, unreadCount = 0 }: NavbarProps) {
                 <span className="hidden sm:inline">Post</span>
               </Link>
 
-              {/* Notifications — desktop only (mobile gets it in BottomNav) */}
+              {/* Notifications — desktop only */}
               <Link
                 href="/notifications"
                 className="relative hidden sm:flex w-9 h-9 items-center justify-center squircle-sm transition-colors"
@@ -84,6 +85,24 @@ export function Navbar({ user, unreadCount = 0 }: NavbarProps) {
                     style={{ background: "#FF4A24", lineHeight: 1 }}
                   >
                     {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Messages — desktop only */}
+              <Link
+                href="/messages"
+                className="relative hidden sm:flex w-9 h-9 items-center justify-center squircle-sm transition-colors"
+                style={{ color: "var(--muted)" }}
+                aria-label="Messaggi"
+              >
+                <MessageCircle className="w-5 h-5" />
+                {unreadMessages > 0 && (
+                  <span
+                    className="absolute top-1 right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full text-[10px] font-bold text-white px-1"
+                    style={{ background: "#FF4A24", lineHeight: 1 }}
+                  >
+                    {unreadMessages > 99 ? "99+" : unreadMessages}
                   </span>
                 )}
               </Link>

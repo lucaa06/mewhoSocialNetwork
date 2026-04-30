@@ -8,9 +8,10 @@ import type { Profile } from "@/types/database";
 interface BottomNavProps {
   user: Pick<Profile, "username"> | null;
   unreadCount?: number;
+  unreadMessages?: number;
 }
 
-export function BottomNav({ user, unreadCount = 0 }: BottomNavProps) {
+export function BottomNav({ user, unreadCount = 0, unreadMessages = 0 }: BottomNavProps) {
   const pathname = usePathname();
 
   // Hide in individual chat pages so keyboard doesn't push nav up
@@ -19,8 +20,8 @@ export function BottomNav({ user, unreadCount = 0 }: BottomNavProps) {
   const items = [
     { href: "/",                                     icon: Home,          label: "Home"      },
     { href: "/community",                            icon: Users2,        label: "Community" },
-    { href: "/notifications",                        icon: Bell,          label: "Notifiche", badge: unreadCount },
-    { href: "/messages",                             icon: MessageCircle, label: "Messaggi"  },
+    { href: "/notifications",                        icon: Bell,          label: "Notifiche", badge: unreadCount  },
+    { href: "/messages",                             icon: MessageCircle, label: "Messaggi",  badge: unreadMessages },
     { href: user ? `/u/${user.username}` : "/login", icon: User,          label: "Profilo"   },
   ];
 

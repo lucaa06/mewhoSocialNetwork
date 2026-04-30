@@ -47,16 +47,44 @@ const getUnreadCount = cache(async () => {
   }
 });
 
+const getUnreadMessages = cache(async () => {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return 0;
+    const { data: memberships } = await supabase
+      .from("conversation_members")
+      .select("conversation_id, last_read_at")
+      .eq("user_id", user.id);
+    if (!memberships?.length) return 0;
+    const convIds = memberships.map(m => m.conversation_id);
+    const { data: msgs } = await supabase
+      .from("messages")
+      .select("conversation_id, created_at, sender_id")
+      .in("conversation_id", convIds)
+      .neq("sender_id", user.id);
+    if (!msgs) return 0;
+    let total = 0;
+    for (const m of memberships) {
+      const lastRead = m.last_read_at ? new Date(m.last_read_at) : new Date(0);
+      total += msgs.filter(msg => msg.conversation_id === m.conversation_id && new Date(msg.created_at) > lastRead).length;
+    }
+    return total;
+  } catch {
+    return 0;
+  }
+});
+
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
-  const [profile, unreadCount] = await Promise.all([getProfile(), getUnreadCount()]);
+  const [profile, unreadCount, unreadMessages] = await Promise.all([getProfile(), getUnreadCount(), getUnreadMessages()]);
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
-      <Navbar user={profile} unreadCount={unreadCount} />
+      <Navbar user={profile} unreadCount={unreadCount} unreadMessages={unreadMessages} />
       <div className="max-w-2xl lg:max-w-3xl mx-auto px-3 sm:px-4 lg:px-6 pt-16 pb-28">
         <main className="mt-4">{children}</main>
       </div>
-      <BottomNav user={profile} unreadCount={unreadCount} />
+      <BottomNav user={profile} unreadCount={unreadCount} unreadMessages={unreadMessages} />
       <ScrollToTopButton />
       <PullToRefresh />
       {profile && <AiFloatingButton />}
