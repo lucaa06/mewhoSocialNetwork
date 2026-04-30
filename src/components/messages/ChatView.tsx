@@ -38,6 +38,22 @@ function MessageText({ text }: { text: string }) {
   return <>{parts.map((p, i) => /^https?:\/\//.test(p) ? <RainbowLink key={i} href={p} text={p} /> : <span key={i}>{p}</span>)}</>;
 }
 
+function CollapsibleText({ text, long, color }: { text: string; long: boolean; color: string }) {
+  const [expanded, setExpanded] = useState(false);
+  if (!long) return <MessageText text={text} />;
+  const preview = text.slice(0, 280);
+  return (
+    <>
+      <MessageText text={expanded ? text : preview + "…"} />
+      <button onClick={() => setExpanded(v => !v)}
+        className="block mt-1 text-[11px] font-semibold underline underline-offset-2 opacity-70 hover:opacity-100 transition-opacity"
+        style={{ color }}>
+        {expanded ? "Mostra meno" : "Leggi di più"}
+      </button>
+    </>
+  );
+}
+
 function AvatarEl({ profile, size = 9 }: { profile: Profile; size?: number }) {
   const cls = `w-${size} h-${size} rounded-full shrink-0 flex items-center justify-center overflow-hidden`;
   if (profile.avatar_emoji) return <div className={cls} style={{ background: "var(--surface)", fontSize: size * 2 }}>{profile.avatar_emoji}</div>;
@@ -49,13 +65,14 @@ function AvatarEl({ profile, size = 9 }: { profile: Profile; size?: number }) {
   );
 }
 
-export function ChatView({ conversationId, currentUserId, otherUser, theme: initialTheme, myPublicKeyJwk, otherPublicKeyJwk }: {
+export function ChatView({ conversationId, currentUserId, otherUser, theme: initialTheme, myPublicKeyJwk, otherPublicKeyJwk, otherLastReadAt: initialOtherLastReadAt }: {
   conversationId: string;
   currentUserId: string;
   otherUser: Profile | null;
   theme: string;
   myPublicKeyJwk: JsonWebKey | null;
   otherPublicKeyJwk: JsonWebKey | null;
+  otherLastReadAt: string | null;
 }) {
   const router = useRouter();
   const [messages, setMessages] = useState<DecryptedMessage[]>([]);
@@ -64,6 +81,7 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
   const [showThemes, setShowThemes] = useState(false);
   const [keyPair, setKeyPair] = useState<{ privateJwk: JsonWebKey; publicJwk: JsonWebKey } | null>(null);
   const [otherPubKey, setOtherPubKey] = useState<JsonWebKey | null>(otherPublicKeyJwk);
+  const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(initialOtherLastReadAt);
   const [, startTransition] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
   const t = THEMES[theme] ?? THEMES.default;
@@ -117,6 +135,11 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
           // Skip if already shown (optimistic update)
           setMessages(prev => prev.some(x => x.id === m.id) ? prev : [...prev, { ...m, text }]);
           setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+        })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "conversation_members", filter: `conversation_id=eq.${conversationId}` },
+        (payload) => {
+          const row = payload.new as { user_id: string; last_read_at: string };
+          if (row.user_id !== currentUserId) setOtherLastReadAt(row.last_read_at);
         })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -257,7 +280,10 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
         )}
         {messages.map((msg, i) => {
           const isMine = msg.sender_id === currentUserId;
-          const isLast = i === messages.length - 1;
+          const isRead = otherLastReadAt !== null && new Date(msg.created_at) <= new Date(otherLastReadAt);
+          const isDelivered = otherLastReadAt !== null; // other user has opened chat at least once
+          const isTemp = msg.id.startsWith("temp-");
+          const long = msg.text.length > 300;
           return (
             <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
               <div className="max-w-[75%]">
@@ -266,15 +292,21 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
                     background: isMine ? t.sentBg : t.receivedBg,
                     color: isMine ? t.sentText : t.receivedText,
                     borderRadius: isMine ? "1rem 1rem 0.25rem 1rem" : "1rem 1rem 1rem 0.25rem",
+                    wordBreak: "break-word",
+                    whiteSpace: "pre-wrap",
                   }}>
-                  <MessageText text={msg.text} />
+                  <CollapsibleText text={msg.text} long={long} color={isMine ? t.sentText : t.receivedText} />
                 </div>
                 <div className={`flex items-center gap-1 mt-0.5 ${isMine ? "justify-end" : "justify-start"}`}>
                   <span className="text-[10px]" style={{ color: "var(--subtle)" }}>{formatTime(msg.created_at)}</span>
-                  {isMine && (isLast
-                    ? <CheckCheck className="w-3 h-3" style={{ color: "var(--accent)" }} strokeWidth={2} />
-                    : <Check className="w-3 h-3" style={{ color: "var(--subtle)" }} strokeWidth={2} />
+                  {isMine && !isTemp && (
+                    isRead
+                      ? <CheckCheck className="w-3 h-3" strokeWidth={2.5} style={{ color: "var(--accent)" }} />
+                      : isDelivered
+                        ? <CheckCheck className="w-3 h-3" strokeWidth={2} style={{ color: "var(--subtle)" }} />
+                        : <Check className="w-3 h-3" strokeWidth={2} style={{ color: "var(--subtle)" }} />
                   )}
+                  {isMine && isTemp && <Check className="w-3 h-3" strokeWidth={2} style={{ color: "var(--subtle)", opacity: 0.4 }} />}
                 </div>
               </div>
             </div>

@@ -19,10 +19,10 @@ export default async function ConversationPage({ params }: Props) {
     .single();
   if (!membership) notFound();
 
-  // Get other member
+  // Get other member + their last_read_at
   const { data: otherMember } = await supabase
     .from("conversation_members")
-    .select("user_id, profiles(id, username, display_name, avatar_url, role, avatar_emoji)")
+    .select("user_id, last_read_at, profiles(id, username, display_name, avatar_url, role, avatar_emoji)")
     .eq("conversation_id", id)
     .neq("user_id", user.id)
     .single();
@@ -52,6 +52,7 @@ export default async function ConversationPage({ params }: Props) {
       theme={conv.theme}
       myPublicKeyJwk={myKey?.public_key_jwk ?? null}
       otherPublicKeyJwk={otherKey?.public_key_jwk ?? null}
+      otherLastReadAt={otherMember?.last_read_at ?? null}
     />
   );
 }
