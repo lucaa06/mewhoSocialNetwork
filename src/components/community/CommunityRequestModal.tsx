@@ -21,11 +21,12 @@ export function CommunityRequestButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-semibold text-white transition-all"
+        className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-white transition-all"
         style={{ background: "linear-gradient(135deg,#FF4A24,#C84FD0)", boxShadow: "0 4px 16px rgba(255,74,36,0.30)" }}
       >
-        <Users2 className="w-4 h-4" />
-        Richiedi una community
+        <Users2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+        <span className="hidden sm:inline">Richiedi una community</span>
+        <span className="sm:hidden">Richiedi</span>
       </button>
 
       {open && <CommunityRequestModal onClose={() => setOpen(false)} />}
