@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Bell, Users2, MessageCircle, User } from "lucide-react";
+import { Home, Bell, Users2, MessageCircle, Settings } from "lucide-react";
 import type { Profile } from "@/types/database";
 
 interface BottomNavProps {
@@ -22,7 +22,7 @@ export function BottomNav({ user, unreadCount = 0, unreadMessages = 0 }: BottomN
     { href: "/community",                            icon: Users2,        label: "Community" },
     { href: "/notifications",                        icon: Bell,          label: "Notifiche", badge: unreadCount  },
     { href: "/messages",                             icon: MessageCircle, label: "Messaggi",  badge: unreadMessages },
-    { href: user ? `/u/${user.username}` : "/login", icon: User,          label: "Profilo"   },
+    { href: "/settings",                              icon: Settings,      label: "Impostazioni" },
   ];
 
   function isActive(href: string) {
