@@ -22,7 +22,7 @@ export default async function ConversationPage({ params }: Props) {
   // Get other member
   const { data: otherMember } = await supabase
     .from("conversation_members")
-    .select("user_id, profiles(id, username, display_name, avatar_url, role, avatar_emoji, last_active_at)")
+    .select("user_id, profiles(id, username, display_name, avatar_url, role, avatar_emoji)")
     .eq("conversation_id", id)
     .neq("user_id", user.id)
     .single();
