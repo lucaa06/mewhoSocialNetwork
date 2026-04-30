@@ -45,7 +45,7 @@ export default async function ConversationPage({ params }: Props) {
   const conv = (membership.conversation as unknown as { id: string; theme: string });
 
   return (
-    <div className="chat-container -mx-3 sm:-mx-4 lg:-mx-6 -mt-4" style={{ height: "calc(100dvh - 56px)" }}>
+    <div className="chat-container -mx-3 sm:-mx-4 lg:-mx-6 -mt-4" style={{ height: "calc(100dvh - 56px)", display: "flex", flexDirection: "column" }}>
       <ChatView
         conversationId={id}
         currentUserId={user.id}
