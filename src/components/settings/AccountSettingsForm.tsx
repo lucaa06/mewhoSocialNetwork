@@ -45,7 +45,7 @@ export function AccountSettingsForm({ profile, email }: { profile: Profile | nul
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden">
       <div>
         <p className="label-xs mb-1.5">Email</p>
         <input value={email} disabled className="input-base opacity-40 cursor-not-allowed" />

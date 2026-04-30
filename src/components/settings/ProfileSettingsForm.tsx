@@ -128,56 +128,27 @@ export function ProfileSettingsForm({ profile }: { profile: Profile | null }) {
     )}
 
     {/* ── Sticky unsaved-changes bar ─────────────────────────── */}
-    <div
-      style={{
-        position: "fixed",
-        top: 56,
-        left: 0,
-        right: 0,
-        zIndex: 200,
-        background: "rgba(245,243,241,0.96)",
-        backdropFilter: "blur(12px)",
-        borderBottom: "1px solid var(--border)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12,
-        padding: "10px 20px",
-        minWidth: 0,
-        transition: "transform 0.22s cubic-bezier(.4,0,.2,1), opacity 0.22s ease",
-        transform: hasChanges ? "translateY(0)" : "translateY(-110%)",
-        opacity: hasChanges ? 1 : 0,
-        pointerEvents: hasChanges ? "auto" : "none",
-      }}
-    >
-      <span style={{ fontSize: 13, fontWeight: 500, color: "var(--muted)", flex: 1, minWidth: 0 }}>
-        <span className="hidden sm:inline">Hai modifiche non salvate</span>
-        <span className="sm:hidden">Modifiche</span>
-      </span>
-      <button
-        type="button"
-        disabled={loading}
-        onClick={handleSubmit(onSubmit, onValidationError)}
-        style={{
-          padding: "8px 20px",
-          borderRadius: 14,
-          fontSize: 13,
-          fontWeight: 700,
-          color: "white",
-          background: loading ? "#ccc" : "linear-gradient(135deg,#FF4A24,#C84FD0)",
-          border: "none",
-          cursor: loading ? "not-allowed" : "pointer",
-          boxShadow: loading ? "none" : "0 4px 14px rgba(255,74,36,0.35)",
-          fontFamily: "var(--fh)",
-          transition: "opacity 0.15s",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {loading ? "Applicando…" : "Applica cambiamenti"}
-      </button>
-    </div>
+    {hasChanges && (
+      <div className="fixed bottom-24 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto md:max-w-sm z-50">
+        <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl shadow-xl"
+          style={{ background: "var(--fg)", backdropFilter: "blur(12px)" }}>
+          <span className="text-sm font-medium" style={{ color: "var(--bg)" }}>
+            Modifiche non salvate
+          </span>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={handleSubmit(onSubmit, onValidationError)}
+            className="shrink-0 px-4 py-1.5 rounded-xl text-sm font-bold transition-opacity disabled:opacity-40"
+            style={{ background: "var(--accent)", color: "white" }}
+          >
+            {loading ? "…" : "Salva"}
+          </button>
+        </div>
+      </div>
+    )}
 
-    <form onSubmit={handleSubmit(onSubmit, onValidationError)} className="space-y-7">
+    <form onSubmit={handleSubmit(onSubmit, onValidationError)} className="space-y-6 overflow-x-hidden">
 
       {/* ── Foto / Emoji ─────────────────────────────────────────────── */}
       <div>
@@ -325,7 +296,7 @@ export function ProfileSettingsForm({ profile }: { profile: Profile | null }) {
             control={control}
             name="role"
             render={({ field }) => (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 gap-2">
                 {ROLES.map(({ value, label, sublabel, icon: Icon, color, bg }) => {
                   const active = field.value === value;
                   return (
@@ -333,19 +304,20 @@ export function ProfileSettingsForm({ profile }: { profile: Profile | null }) {
                       key={value}
                       type="button"
                       onClick={() => field.onChange(value)}
-                      className="flex flex-col items-start gap-2 p-4 rounded-2xl border-2 transition-all text-left"
+                      className="flex items-center gap-3 px-4 py-3 rounded-2xl border-2 transition-all text-left w-full"
                       style={{
                         borderColor: active ? color : "var(--border)",
                         background: active ? bg : "var(--card)",
                       }}
                     >
-                      <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: bg }}>
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: bg }}>
                         <Icon className="w-4 h-4" style={{ color }} strokeWidth={1.8} />
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold leading-tight" style={{ color: "var(--fg)" }}>{label}</p>
-                        <p className="text-[11px] mt-0.5 leading-snug" style={{ color: "var(--muted)" }}>{sublabel}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold" style={{ color: "var(--fg)" }}>{label}</p>
+                        <p className="text-xs" style={{ color: "var(--muted)" }}>{sublabel}</p>
                       </div>
+                      {active && <Check className="w-4 h-4 shrink-0" style={{ color }} />}
                     </button>
                   );
                 })}
