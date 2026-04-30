@@ -22,7 +22,8 @@ export type AdminActionType =
   | "delete_post"
   | "resolve_report"
   | "dismiss_report"
-  | "close_bug";
+  | "close_bug"
+  | "send_password_reset";
 
 export interface Profile {
   id: string;

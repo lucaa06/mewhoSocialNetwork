@@ -28,6 +28,17 @@ export default async function AdminUsersPage({
 
   const { data: users } = await query;
 
+  // Fetch auth users to get emails
+  const { data: { users: authUsers } } = await createAdminClient().auth.admin.listUsers({ perPage: 1000 });
+  const emailMap = new Map<string, string>(
+    (authUsers ?? []).map((u) => [u.id, u.email ?? ""])
+  );
+
+  const usersWithEmail = (users ?? []).map((u) => ({
+    ...u,
+    email: emailMap.get(u.id) || undefined,
+  }));
+
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-bold text-black">Utenti</h1>
@@ -35,7 +46,7 @@ export default async function AdminUsersPage({
         <AdminUserFilters q={params.q} role={params.role} suspended={params.suspended} />
       </Suspense>
       <div className="bg-white border border-black/6 rounded-2xl">
-        <AdminUserTable users={users ?? []} />
+        <AdminUserTable users={usersWithEmail} />
       </div>
     </div>
   );

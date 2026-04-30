@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminUserActions } from "@/components/admin/AdminUserActions";
 import { AdminUserRestrictions } from "@/components/admin/AdminUserRestrictions";
 import { AdminEditUserForm } from "@/components/admin/AdminEditUserForm";
+import { AdminPasswordReset } from "@/components/admin/AdminPasswordReset";
 import { formatDate } from "@/lib/utils";
 
 type Props = { params: Promise<{ id: string }> };
@@ -19,7 +20,7 @@ export default async function AdminUserDetailPage({ params }: Props) {
   const serverClient = await createClient();
   const { data: { user: currentAdmin } } = await serverClient.auth.getUser();
 
-  const [{ data: profile }, { data: reports }, { data: restrictions }, { data: recentActions }] =
+  const [{ data: profile }, { data: reports }, { data: restrictions }, { data: recentActions }, { data: authUserData }] =
     await Promise.all([
       supabase.from("profiles").select("*").eq("id", id).single(),
       supabase.from("reports")
@@ -33,7 +34,10 @@ export default async function AdminUserDetailPage({ params }: Props) {
         .eq("target_id", id)
         .order("created_at", { ascending: false })
         .limit(20),
+      supabase.auth.admin.getUserById(id),
     ]);
+
+  const authUser = authUserData?.user;
 
   if (!profile) notFound();
 
@@ -49,6 +53,7 @@ export default async function AdminUserDetailPage({ params }: Props) {
         <p className="text-[11px] font-semibold text-black/35 uppercase tracking-widest mb-3">Info profilo</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           {[
+            ["Email", authUser?.email ?? "—"],
             ["Username", `@${profile.username}`],
             ["Ruolo", profile.role],
             ["Paese", profile.country_code ?? "—"],
@@ -131,6 +136,9 @@ export default async function AdminUserDetailPage({ params }: Props) {
 
       {/* Actions */}
       <AdminUserActions profile={profile} currentAdminId={currentAdmin?.id ?? ""} />
+
+      {/* Password reset */}
+      <AdminPasswordReset userId={id} email={authUser?.email ?? null} />
 
       {/* History */}
       {recentActions && recentActions.length > 0 && (

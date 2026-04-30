@@ -4,11 +4,12 @@ import type { Profile } from "@/types/database";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { BadgeCheck } from "lucide-react";
+import { useState, useCallback } from "react";
 
 type AdminUserRow = Pick<
   Profile,
   "id" | "username" | "display_name" | "avatar_url" | "role" | "country_code" | "is_verified" | "is_suspended" | "is_banned" | "created_at"
->;
+> & { email?: string };
 
 const ROLE_STYLE: Record<string, { bg: string; color: string; label: string }> = {
   admin:      { bg: "rgba(55,65,81,0.1)",   color: "#374151", label: "Admin" },
@@ -16,6 +17,36 @@ const ROLE_STYLE: Record<string, { bg: string; color: string; label: string }> =
   researcher: { bg: "rgba(109,65,255,0.1)", color: "#6D41FF", label: "Ricercatore" },
   user:       { bg: "rgba(217,119,6,0.1)",  color: "#D97706", label: "Maker" },
 };
+
+function CopyEmailCell({ email }: { email?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(() => {
+    if (!email) return;
+    navigator.clipboard.writeText(email).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }, [email]);
+
+  if (!email) {
+    return <span className="text-black/25">—</span>;
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      title="Copia email"
+      className="text-xs text-black/40 hover:text-black/70 transition-colors flex items-center gap-1 cursor-pointer"
+    >
+      {copied ? (
+        <span className="text-green-600 font-semibold">✓</span>
+      ) : (
+        <span className="truncate max-w-[180px]">{email}</span>
+      )}
+    </button>
+  );
+}
 
 export function AdminUserTable({ users }: { users: AdminUserRow[] }) {
   return (
@@ -25,6 +56,7 @@ export function AdminUserTable({ users }: { users: AdminUserRow[] }) {
           <tr className="text-left border-b border-black/6">
             <th className="px-4 py-3 text-[11px] font-semibold text-black/35 uppercase tracking-widest">Utente</th>
             <th className="px-4 py-3 text-[11px] font-semibold text-black/35 uppercase tracking-widest">Ruolo</th>
+            <th className="px-4 py-3 text-[11px] font-semibold text-black/35 uppercase tracking-widest hidden sm:table-cell">Email</th>
             <th className="px-4 py-3 text-[11px] font-semibold text-black/35 uppercase tracking-widest hidden sm:table-cell">Paese</th>
             <th className="px-4 py-3 text-[11px] font-semibold text-black/35 uppercase tracking-widest">Stato</th>
             <th className="px-4 py-3 text-[11px] font-semibold text-black/35 uppercase tracking-widest hidden md:table-cell">Registrato</th>
@@ -48,6 +80,9 @@ export function AdminUserTable({ users }: { users: AdminUserRow[] }) {
                     style={{ background: role.bg, color: role.color }}>
                     {role.label}
                   </span>
+                </td>
+                <td className="px-4 py-3 hidden sm:table-cell">
+                  <CopyEmailCell email={user.email} />
                 </td>
                 <td className="px-4 py-3 text-black/40 text-xs hidden sm:table-cell">{user.country_code ?? "—"}</td>
                 <td className="px-4 py-3">
@@ -75,7 +110,7 @@ export function AdminUserTable({ users }: { users: AdminUserRow[] }) {
           })}
           {users.length === 0 && (
             <tr>
-              <td colSpan={6} className="px-4 py-12 text-center text-black/25 text-sm">Nessun utente trovato</td>
+              <td colSpan={7} className="px-4 py-12 text-center text-black/25 text-sm">Nessun utente trovato</td>
             </tr>
           )}
         </tbody>
