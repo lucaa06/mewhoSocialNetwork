@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Bot, Pencil, Search, X, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -20,7 +20,7 @@ export function MessagesList({ currentUserId, memberships, otherMembers, connect
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [showNew, setShowNew] = useState(false);
-  const [, startTransition] = useTransition();
+  const [loadingChat, setLoadingChat] = useState<string | null>(null);
 
   const sorted = [...memberships].sort(
     (a, b) => new Date(b.conversation.last_message_at).getTime() - new Date(a.conversation.last_message_at).getTime()
@@ -30,9 +30,11 @@ export function MessagesList({ currentUserId, memberships, otherMembers, connect
     return otherMembers.find(m => m.conversation_id === convId)?.profiles ?? null;
   }
 
-  function startChat(userId: string) {
+  async function startChat(userId: string) {
+    if (loadingChat) return;
+    setLoadingChat(userId);
     setShowNew(false);
-    startTransition(async () => {
+    try {
       const supabase = createClient();
       // Check if conversation already exists
       const { data: existing } = await supabase
@@ -53,14 +55,23 @@ export function MessagesList({ currentUserId, memberships, otherMembers, connect
         }
       }
       // Create new conversation
-      const { data: conv } = await supabase.from("conversations").insert({ theme: "default" }).select("id").single();
-      if (!conv) return;
-      await supabase.from("conversation_members").insert([
+      const { data: conv, error: convErr } = await supabase
+        .from("conversations")
+        .insert({ theme: "default" })
+        .select("id")
+        .single();
+      if (convErr || !conv) { console.error("conv error", convErr); return; }
+
+      const { error: memErr } = await supabase.from("conversation_members").insert([
         { conversation_id: conv.id, user_id: currentUserId },
         { conversation_id: conv.id, user_id: userId },
       ]);
+      if (memErr) { console.error("member error", memErr); return; }
+
       router.push(`/messages/${conv.id}`);
-    });
+    } finally {
+      setLoadingChat(null);
+    }
   }
 
   const filteredUsers = connections.filter(u =>
@@ -99,8 +110,8 @@ export function MessagesList({ currentUserId, memberships, otherMembers, connect
           </div>
           <div className="max-h-64 overflow-y-auto divide-y divide-black/4">
             {filteredUsers.map(u => (
-              <button key={u.id} onClick={() => startChat(u.id)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-black/3 transition-colors text-left">
+              <button key={u.id} onClick={() => startChat(u.id)} disabled={!!loadingChat}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-black/3 transition-colors text-left disabled:opacity-60">
                 <AvatarEl profile={u} size="sm" />
                 <div>
                   <p className="text-sm font-medium text-black">{u.display_name}</p>
