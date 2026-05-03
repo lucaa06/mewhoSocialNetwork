@@ -49,19 +49,31 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Admin route guard
-    if (ADMIN_ROUTES.some(r => pathname.startsWith(r))) {
-      if (!user) {
-        return NextResponse.redirect(new URL("/login", request.url));
+    // For authenticated users: check onboarding completion + admin guard
+    if (user) {
+      const isAdmin = ADMIN_ROUTES.some(r => pathname.startsWith(r));
+      const isOnboarding = pathname.startsWith("/onboarding");
+      const isApi = pathname.startsWith("/api");
+
+      if (!isOnboarding && !isApi) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role, username")
+          .eq("id", user.id)
+          .single();
+
+        // Onboarding incomplete — username is still the temp one
+        if (profile && profile.username === `user_${user.id.slice(0, 8)}`) {
+          return NextResponse.redirect(new URL("/onboarding", request.url));
+        }
+
+        // Admin guard
+        if (isAdmin && profile?.role !== "admin") {
+          return NextResponse.redirect(new URL("/", request.url));
+        }
       }
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-      if (profile?.role !== "admin") {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
+    } else if (ADMIN_ROUTES.some(r => pathname.startsWith(r))) {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   } catch {
     // If Supabase is unreachable, allow the request through — pages handle errors themselves
