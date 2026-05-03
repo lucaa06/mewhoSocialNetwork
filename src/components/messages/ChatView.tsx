@@ -62,7 +62,7 @@ function AvatarEl({ profile, size = 9 }: { profile: Profile; size?: number }) {
 }
 
 function rawToMsg(m: Omit<Message, "text">): Message {
-  return { ...m, text: m.ciphertext };
+  return { ...m, text: m.iv === "PLAIN" ? m.ciphertext : "🔒 Messaggio precedente non leggibile" };
 }
 
 export function ChatView({ conversationId, currentUserId, otherUser, theme: initialTheme, otherLastReadAt: initialOtherLastReadAt }: {
