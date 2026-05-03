@@ -80,8 +80,12 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
   const [theme, setTheme] = useState(initialTheme || "default");
   const [showThemes, setShowThemes] = useState(false);
   const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(initialOtherLastReadAt);
+  const [otherTyping, setOtherTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const broadcastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const t = THEMES[theme] ?? THEMES.default;
 
   // Pre-fill input when a post is shared via URL param
@@ -114,13 +118,14 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
       .eq("user_id", currentUserId)
       .then(() => {});
 
-    // Realtime: new messages
+    // Realtime: new messages + typing indicator
     const channel = supabase.channel(`chat:${conversationId}`)
       .on("postgres_changes",
         { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
         (payload) => {
           const m = rawToMsg(payload.new as Omit<Message, "text">);
           setMessages(prev => prev.some(x => x.id === m.id) ? prev : [...prev, m]);
+          setOtherTyping(false);
           setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
         })
       .on("postgres_changes",
@@ -129,10 +134,29 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
           const row = payload.new as { user_id: string; last_read_at: string };
           if (row.user_id !== currentUserId) setOtherLastReadAt(row.last_read_at);
         })
+      .on("broadcast", { event: "typing" }, ({ payload }) => {
+        if ((payload as { user_id: string }).user_id === currentUserId) return;
+        setOtherTyping(true);
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setOtherTyping(false), 2500);
+      })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    channelRef.current = channel;
+
+    return () => {
+      supabase.removeChannel(channel);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      if (broadcastTimeoutRef.current) clearTimeout(broadcastTimeoutRef.current);
+    };
   }, [conversationId, currentUserId]);
+
+  function broadcastTyping() {
+    if (!channelRef.current) return;
+    if (broadcastTimeoutRef.current) return; // debounce: send at most once per second
+    channelRef.current.send({ type: "broadcast", event: "typing", payload: { user_id: currentUserId } });
+    broadcastTimeoutRef.current = setTimeout(() => { broadcastTimeoutRef.current = null; }, 1000);
+  }
 
   async function sendMessage(e?: React.FormEvent | React.KeyboardEvent) {
     e?.preventDefault();
@@ -279,6 +303,18 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
         <div ref={bottomRef} />
       </div>
 
+      {/* Typing indicator */}
+      {otherTyping && (
+        <div className="px-5 pb-1 flex items-center gap-2">
+          <div className="flex gap-1 items-center px-3 py-2 rounded-2xl" style={{ background: t.receivedBg }}>
+            <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: "var(--muted)", animationDelay: "0ms" }} />
+            <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: "var(--muted)", animationDelay: "150ms" }} />
+            <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: "var(--muted)", animationDelay: "300ms" }} />
+          </div>
+          <span className="text-[10px]" style={{ color: "var(--subtle)" }}>sta scrivendo…</span>
+        </div>
+      )}
+
       {/* Input */}
       <form onSubmit={sendMessage}
         className="shrink-0 px-3 py-3 flex gap-2 items-end"
@@ -286,7 +322,7 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
         <input
           ref={inputRef}
           value={input}
-          onChange={e => setInput(e.target.value)}
+          onChange={e => { setInput(e.target.value); broadcastTyping(); }}
           onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
           placeholder="Scrivi un messaggio…"
           className="flex-1 px-4 py-2.5 rounded-2xl text-sm focus:outline-none transition-colors"
