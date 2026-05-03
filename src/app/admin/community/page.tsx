@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AdminCreateCommunity } from "@/components/admin/AdminCreateCommunity";
 import { AdminCommunityRequests } from "@/components/admin/AdminCommunityRequests";
+import { AdminDeleteCommunity } from "@/components/admin/AdminDeleteCommunity";
 
 export const metadata: Metadata = { title: "Admin — Community" };
 
@@ -82,11 +83,12 @@ export default async function AdminCommunityPage() {
               <p className="text-center text-black/25 py-10 text-sm">Nessuna community</p>
             )}
             {(communities ?? []).map(c => (
-              <div key={c.id} className="flex items-center justify-between py-3 first:pt-0">
-                <div>
-                  <p className="text-sm font-medium text-black">{c.name}</p>
+              <div key={c.id} className="flex items-center justify-between py-3 first:pt-0 gap-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-black truncate">{c.name}</p>
                   <p className="text-xs text-black/30">/{c.slug} · {c.members_count ?? 0} membri · {c.is_public ? "Pubblica" : "Privata"}</p>
                 </div>
+                <AdminDeleteCommunity id={c.id} name={c.name} />
               </div>
             ))}
           </div>
