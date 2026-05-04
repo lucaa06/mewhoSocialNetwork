@@ -11,7 +11,6 @@ interface Community {
   name: string;
   description: string | null;
   category: string | null;
-  avatar_emoji: string | null;
   is_public: boolean;
   members_count?: number;
 }
@@ -34,7 +33,7 @@ export function AdminCommunityCard({ community }: { community: Community }) {
 
   const [name, setName] = useState(community.name);
   const [description, setDescription] = useState(community.description ?? "");
-  const [emoji, setEmoji] = useState(community.avatar_emoji ?? "");
+  const [emoji, setEmoji] = useState("");
 
   const color = CATEGORY_COLOR[community.category ?? "other"] ?? "#6b7280";
 
@@ -124,7 +123,7 @@ export function AdminCommunityCard({ community }: { community: Community }) {
       {/* Avatar */}
       <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-lg font-bold"
         style={{ background: `${color}18`, color }}>
-        {community.avatar_emoji || community.name[0]?.toUpperCase()}
+        {community.name[0]?.toUpperCase()}
       </div>
 
       {/* Info */}

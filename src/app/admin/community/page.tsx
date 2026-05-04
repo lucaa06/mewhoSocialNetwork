@@ -14,7 +14,7 @@ export default async function AdminCommunityPage() {
   const [{ data: communities }, { data: requests }] = await Promise.all([
     supabase
       .from("communities")
-      .select("id, slug, name, description, category, avatar_emoji, is_public, created_at, members_count")
+      .select("id, slug, name, description, category, is_public, created_at, members_count")
       .order("created_at", { ascending: false })
       .limit(100),
     supabase
