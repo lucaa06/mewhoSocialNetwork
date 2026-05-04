@@ -43,7 +43,7 @@ export function AdminCommunityCard({ community }: { community: Community }) {
     const res = await fetch(`/api/admin/community/${community.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), description: description.trim() || null, avatar_emoji: emoji || null }),
+      body: JSON.stringify({ name: name.trim(), description: description.trim() || null }),
     });
     setSaving(false);
     if (!res.ok) { const d = await res.json(); toast.error(d.error ?? "Errore"); return; }
@@ -73,22 +73,13 @@ export function AdminCommunityCard({ community }: { community: Community }) {
     return (
       <div className="px-5 py-4 bg-black/[0.015] border-b border-black/5 last:border-0">
         <div className="space-y-3">
-          {/* Emoji + Name row */}
-          <div className="flex gap-2">
-            <input
-              value={emoji}
-              onChange={e => setEmoji(e.target.value)}
-              placeholder="😀"
-              maxLength={2}
-              className="w-14 text-center text-xl px-2 py-2 rounded-xl border border-black/10 bg-white focus:outline-none focus:border-[#FF4A24]"
-            />
-            <input
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Nome community"
-              className="flex-1 px-3 py-2 rounded-xl border border-black/10 bg-white text-sm text-black focus:outline-none focus:border-[#FF4A24]"
-            />
-          </div>
+          {/* Name */}
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Nome community"
+            className="w-full px-3 py-2 rounded-xl border border-black/10 bg-white text-sm text-black focus:outline-none focus:border-[#FF4A24]"
+          />
           {/* Description */}
           <textarea
             value={description}
