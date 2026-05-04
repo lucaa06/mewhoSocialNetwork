@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2, Check, X, AlertTriangle, Loader2, Users, Globe, Lock } from "lucide-react";
+import { Pencil, Trash2, Check, X, AlertTriangle, Loader2, Globe, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 interface Community {
@@ -12,7 +12,6 @@ interface Community {
   description: string | null;
   category: string | null;
   is_public: boolean;
-  members_count?: number;
 }
 
 const CATEGORY_COLOR: Record<string, string> = {
@@ -130,10 +129,6 @@ export function AdminCommunityCard({ community }: { community: Community }) {
         </div>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
           <span className="text-xs text-black/35 font-mono">/{community.slug}</span>
-          <span className="text-black/20">·</span>
-          <span className="flex items-center gap-1 text-xs text-black/35">
-            <Users className="w-3 h-3" />{community.members_count ?? 0}
-          </span>
           <span className="text-black/20">·</span>
           <span className="flex items-center gap-1 text-xs text-black/35">
             {community.is_public ? <><Globe className="w-3 h-3" />Pubblica</> : <><Lock className="w-3 h-3" />Privata</>}

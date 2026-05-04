@@ -4,7 +4,7 @@ import { AdminCreateCommunity } from "@/components/admin/AdminCreateCommunity";
 import { AdminCommunityRequests } from "@/components/admin/AdminCommunityRequests";
 import { AdminCommunityCard } from "@/components/admin/AdminCommunityCard";
 import { AdminReviewedToggle } from "@/components/admin/AdminReviewedToggle";
-import { Users, Clock, Globe } from "lucide-react";
+import { Clock, Globe } from "lucide-react";
 
 export const metadata: Metadata = { title: "Admin — Community" };
 
@@ -14,7 +14,7 @@ export default async function AdminCommunityPage() {
   const [{ data: communities }, { data: requests }] = await Promise.all([
     supabase
       .from("communities")
-      .select("id, slug, name, description, category, is_public, created_at, members_count")
+      .select("id, slug, name, description, category, is_public, created_at")
       .order("created_at", { ascending: false })
       .limit(100),
     supabase
@@ -36,7 +36,7 @@ export default async function AdminCommunityPage() {
         <div className="flex items-center gap-2">
           <Stat icon={Globe}  label="Totale"      value={communities?.length ?? 0} color="#0EA5E9" />
           <Stat icon={Clock}  label="In attesa"   value={pending.length}           color="#D97706" highlight={pending.length > 0} />
-          <Stat icon={Users}  label="Revisionate" value={reviewed.length}          color="#16A34A" />
+          <Stat icon={Clock}  label="Revisionate" value={reviewed.length}          color="#16A34A" />
         </div>
       </div>
 
