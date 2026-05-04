@@ -64,7 +64,7 @@ export function AdminCommunityCard({ community }: { community: Community }) {
   function handleCancel() {
     setName(community.name);
     setDescription(community.description ?? "");
-    setEmoji(community.avatar_emoji ?? "");
+    setEmoji("");
     setEditing(false);
     setConfirmDelete(false);
   }
