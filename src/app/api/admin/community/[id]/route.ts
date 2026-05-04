@@ -14,20 +14,33 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
 
   const admin = createAdminClient();
 
-  // Delete dependent records first to avoid FK constraint errors
-  await Promise.all([
-    admin.from("posts").update({ community_id: null }).eq("community_id", id),
-    admin.from("community_members").delete().eq("community_id", id),
-  ]);
+  // 1. Detach posts (set community_id = null)
+  const { error: postsErr } = await admin
+    .from("posts")
+    .update({ community_id: null })
+    .eq("community_id", id);
+  if (postsErr) return NextResponse.json({ error: `posts: ${postsErr.message}` }, { status: 500 });
 
+  // 2. Remove community members
+  const { error: membersErr } = await admin
+    .from("community_members")
+    .delete()
+    .eq("community_id", id);
+  if (membersErr) return NextResponse.json({ error: `members: ${membersErr.message}` }, { status: 500 });
+
+  // 3. Delete the community
   const { error } = await admin.from("communities").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // 4. Log (best-effort)
   await admin.from("admin_actions").insert({
     admin_id: user.id,
     action: "delete_community",
+    target_type: "community",
     target_id: id,
-  });
+    reason: "Admin deleted",
+    metadata: {},
+  }).then(() => {});
 
   return NextResponse.json({ ok: true });
 }
