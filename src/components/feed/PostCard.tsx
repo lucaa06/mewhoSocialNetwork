@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, MessageCircle, Bookmark, Flag, MoreHorizontal, Share2 } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Flag, MoreHorizontal, Share2, Languages, Loader2 } from "lucide-react";
 import type { Post } from "@/types/database";
 import { formatDate, getAvatarFallback } from "@/lib/utils";
 import { useState, useTransition, useRef, useEffect } from "react";
@@ -28,6 +28,8 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
   const [showShareModal, setShowShareModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
+  const [translated, setTranslated] = useState<{ title?: string; content: string } | null>(null);
+  const [translating, setTranslating] = useState(false);
   const contentRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
@@ -47,6 +49,23 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
 
   const author = post.author as (typeof post.author & { avatar_emoji?: string | null }) | undefined;
   const roleColor = ROLE_COLOR[author?.role ?? "user"] ?? "#10b981";
+
+  async function handleTranslate() {
+    if (translated) { setTranslated(null); return; }
+    setTranslating(true);
+    const lang = (navigator.language ?? "en").slice(0, 2);
+    async function translate(text: string) {
+      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=autodetect|${lang}`);
+      const json = await res.json();
+      return (json.responseData?.translatedText as string) ?? text;
+    }
+    const [content, title] = await Promise.all([
+      translate(post.content),
+      post.title ? translate(post.title) : Promise.resolve(undefined),
+    ]);
+    setTranslated({ content, title });
+    setTranslating(false);
+  }
 
   function requireAuth() {
     router.push("/login?next=" + encodeURIComponent(window.location.pathname));
@@ -185,7 +204,7 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
         {post.title && (
           <Link href={`/post/${post.id}`}>
             <h2 className="font-semibold mb-1.5 leading-snug hover:opacity-70 transition-opacity text-base sm:text-[15px]" style={{ color: "var(--fg)" }}>
-              {post.title}
+              {translated?.title ?? post.title}
             </h2>
           </Link>
         )}
@@ -203,7 +222,7 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
               wordBreak: "break-word",
             }}
           >
-            {post.content}
+            {translated?.content ?? post.content}
           </p>
           {isTruncated && !expanded && (
             <div
@@ -280,6 +299,18 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
               strokeWidth={saved ? 0 : 1.7}
               fill={saved ? "var(--accent)" : "none"}
             />
+          </button>
+          <button
+            onClick={handleTranslate}
+            disabled={translating}
+            className="min-h-[36px] px-1 transition-colors"
+            style={{ color: translated ? "var(--accent)" : "var(--subtle)" }}
+            title={translated ? "Mostra originale" : "Traduci"}
+          >
+            {translating
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : <Languages className="w-4 h-4" strokeWidth={1.7} />
+            }
           </button>
           <button
             onClick={() => setShowShareModal(true)}
