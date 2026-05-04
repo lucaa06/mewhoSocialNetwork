@@ -1,451 +1,496 @@
-// All SVGs share viewBox="0 0 400 400" matching the canvas.
-// SKIN_PLACEHOLDER and HAIR_PLACEHOLDER are replaced at render time.
+// High-quality flat vector SVGs — viewBox="0 0 400 400"
+// Character layout: head cx=200 cy=192, eyes y=172, mouth y=238, chin y=298
+// SKIN_PLACEHOLDER → skin hex, HAIR_PLACEHOLDER → hair hex at render time
 
 export type LayerKey =
   | "background" | "body" | "clothes" | "head" | "ears"
   | "beard" | "mouth" | "nose" | "eyes" | "eyebrows"
   | "details" | "hair_back" | "hair_front" | "glasses" | "accessories";
 
-export interface AvatarOption {
-  id: string;
-  label: string;
-  svg: string;
-}
-
-export interface AvatarCategory {
-  key: LayerKey;
-  label: string;
-  optional?: boolean;
-  options: AvatarOption[];
-}
-
+export interface AvatarOption  { id: string; label: string; svg: string }
+export interface AvatarCategory { key: LayerKey; label: string; optional?: boolean; options: AvatarOption[] }
 export interface AvatarState {
-  bgColor: string;
-  skinTone: string;
-  hairColor: string;
+  bgColor: string; skinTone: string; hairColor: string;
   layers: Record<LayerKey, string | null>;
 }
 
-// ─── helpers ──────────────────────────────────────────────────────────────────
-const wrap = (inner: string) =>
+const w = (inner: string) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">${inner}</svg>`;
 
-// ─── Background ───────────────────────────────────────────────────────────────
-const BG_COLORS = ["#FF4A24","#1E3A5F","#8B9BB4","#6D41FF","#16A34A","#D97706","#C84FD0","#0EA5E9"];
+// ─── BACKGROUND ───────────────────────────────────────────────────────────────
+export const BG_OPTIONS: AvatarOption[] = [
+  { id:"bg_orange", label:"Arancione", svg: w(`<circle cx="200" cy="200" r="199" fill="#FF4A24"/>`) },
+  { id:"bg_navy",   label:"Blu navy",  svg: w(`<circle cx="200" cy="200" r="199" fill="#1E3A5F"/>`) },
+  { id:"bg_grey",   label:"Grigio",    svg: w(`<circle cx="200" cy="200" r="199" fill="#8B9BB4"/>`) },
+  { id:"bg_purple", label:"Viola",     svg: w(`<circle cx="200" cy="200" r="199" fill="#6D41FF"/>`) },
+  { id:"bg_green",  label:"Verde",     svg: w(`<circle cx="200" cy="200" r="199" fill="#16A34A"/>`) },
+  { id:"bg_amber",  label:"Ambra",     svg: w(`<circle cx="200" cy="200" r="199" fill="#D97706"/>`) },
+  { id:"bg_pink",   label:"Rosa",      svg: w(`<circle cx="200" cy="200" r="199" fill="#C84FD0"/>`) },
+  { id:"bg_sky",    label:"Cielo",     svg: w(`<circle cx="200" cy="200" r="199" fill="#0EA5E9"/>`) },
+];
 
-export const BG_OPTIONS: AvatarOption[] = BG_COLORS.map((c, i) => ({
-  id: `bg_${i}`,
-  label: c,
-  svg: wrap(`<circle cx="200" cy="200" r="198" fill="${c}"/>`),
-}));
+// ─── EARS ─────────────────────────────────────────────────────────────────────
+export const EARS_OPTIONS: AvatarOption[] = [
+  { id:"ears_1", label:"Normali", svg: w(`
+    <ellipse cx="101" cy="193" rx="16" ry="22" fill="SKIN_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <ellipse cx="101" cy="193" rx="9" ry="13" fill="SKIN_PLACEHOLDER" stroke="#c8895a" stroke-width="1.5" opacity=".5"/>
+    <ellipse cx="299" cy="193" rx="16" ry="22" fill="SKIN_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <ellipse cx="299" cy="193" rx="9" ry="13" fill="SKIN_PLACEHOLDER" stroke="#c8895a" stroke-width="1.5" opacity=".5"/>
+  `) },
+];
 
-// ─── Body (neck + shoulders) ──────────────────────────────────────────────────
-const bodyBase = (neckW = 52, shoulderY = 310) => wrap(`
-  <ellipse cx="200" cy="${shoulderY + 40}" rx="${neckW / 2 + 2}" ry="14" fill="SKIN_PLACEHOLDER"/>
-  <rect x="${200 - neckW / 2}" y="268" width="${neckW}" height="${shoulderY - 268}" fill="SKIN_PLACEHOLDER"/>
-  <ellipse cx="200" cy="275" rx="${neckW / 2}" ry="12" fill="SKIN_PLACEHOLDER"/>
-`);
-
+// ─── BODY (neck + shoulders — always below clothes) ───────────────────────────
 export const BODY_OPTIONS: AvatarOption[] = [
-  { id: "body_1", label: "Standard", svg: bodyBase(52, 310) },
-  { id: "body_2", label: "Largo",    svg: bodyBase(60, 305) },
-  { id: "body_3", label: "Stretto",  svg: bodyBase(44, 315) },
+  { id:"body_1", label:"Standard", svg: w(`
+    <path d="M172,296 C172,296 168,308 168,328 L232,328 C232,308 228,296 228,296Z" fill="SKIN_PLACEHOLDER"/>
+    <ellipse cx="200" cy="296" rx="28" ry="8" fill="SKIN_PLACEHOLDER"/>
+    <ellipse cx="200" cy="328" rx="32" ry="10" fill="SKIN_PLACEHOLDER"/>
+  `) },
 ];
 
-// ─── Clothes ──────────────────────────────────────────────────────────────────
-const hoodie = (c1: string, c2: string) => wrap(`
-  <path d="M60,400 Q80,300 130,285 L200,310 L270,285 Q320,300 340,400 Z" fill="${c1}" stroke="#1a1a2e" stroke-width="2.5"/>
-  <path d="M155,285 Q200,330 245,285" fill="none" stroke="${c2}" stroke-width="3"/>
-  <path d="M200,295 L200,320" stroke="${c2}" stroke-width="3"/>
-`);
-const tshirt = (c: string) => wrap(`
-  <path d="M80,400 Q95,305 130,288 L155,280 Q155,308 245,308 Q245,280 270,288 Q305,305 320,400 Z" fill="${c}" stroke="#1a1a2e" stroke-width="2.5"/>
-  <path d="M130,288 Q120,265 100,268 L80,295 Q100,295 105,285" fill="${c}" stroke="#1a1a2e" stroke-width="2.5"/>
-  <path d="M270,288 Q280,265 300,268 L320,295 Q300,295 295,285" fill="${c}" stroke="#1a1a2e" stroke-width="2.5"/>
-`);
-const shirt = (c: string) => wrap(`
-  <path d="M75,400 Q90,305 125,285 L155,275 L155,285 Q200,310 245,285 L245,275 L275,285 Q310,305 325,400 Z" fill="${c}" stroke="#1a1a2e" stroke-width="2.5"/>
-  <path d="M155,275 L155,340" stroke="#d4d4d4" stroke-width="2"/>
-  <circle cx="155" cy="295" r="3" fill="#aaa"/>
-  <circle cx="155" cy="315" r="3" fill="#aaa"/>
-`);
-const jacket = (c1: string, c2: string) => wrap(`
-  <path d="M75,400 Q88,300 125,283 L200,315 L275,283 Q312,300 325,400 Z" fill="${c1}" stroke="#1a1a2e" stroke-width="2.5"/>
-  <path d="M175,315 L175,400" stroke="${c2}" stroke-width="3"/>
-  <path d="M225,315 L225,400" stroke="${c2}" stroke-width="3"/>
-  <path d="M125,283 Q115,262 95,265 L75,290 Q95,290 100,278" fill="${c1}" stroke="#1a1a2e" stroke-width="2.5"/>
-  <path d="M275,283 Q285,262 305,265 L325,290 Q305,290 300,278" fill="${c1}" stroke="#1a1a2e" stroke-width="2.5"/>
-`);
-const tank = (c: string) => wrap(`
-  <path d="M110,400 L110,305 Q115,285 140,280 Q200,300 260,280 Q285,285 290,305 L290,400 Z" fill="${c}" stroke="#1a1a2e" stroke-width="2.5"/>
-  <path d="M110,305 Q105,285 120,278" fill="none" stroke="#1a1a2e" stroke-width="2.5"/>
-  <path d="M290,305 Q295,285 280,278" fill="none" stroke="#1a1a2e" stroke-width="2.5"/>
-`);
-
-export const CLOTHES_OPTIONS: AvatarOption[] = [
-  { id: "hoodie_orange", label: "Felpa arancio", svg: hoodie("#FF4A24","#cc3a1a") },
-  { id: "hoodie_navy",   label: "Felpa blu",     svg: hoodie("#1E3A5F","#162c48") },
-  { id: "tshirt_white",  label: "T-shirt bianca", svg: tshirt("#f5f5f5") },
-  { id: "tshirt_black",  label: "T-shirt nera",  svg: tshirt("#2a2a2a") },
-  { id: "shirt_blue",    label: "Camicia blu",   svg: shirt("#4a90d9") },
-  { id: "shirt_white",   label: "Camicia bianca",svg: shirt("#fafafa") },
-  { id: "jacket_denim",  label: "Giacca denim",  svg: jacket("#4a6fa5","#3a5a8a") },
-  { id: "jacket_black",  label: "Giacca nera",   svg: jacket("#2a2a2a","#1a1a1a") },
-  { id: "tank_grey",     label: "Canottiera",    svg: tank("#9ca3af") },
-];
-
-// ─── Head shapes ──────────────────────────────────────────────────────────────
-const head = (rx: number, ry: number, cy = 172) => wrap(`
-  <ellipse cx="200" cy="${cy}" rx="${rx}" ry="${ry}" fill="SKIN_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2.5"/>
-`);
+// ─── HEAD ─────────────────────────────────────────────────────────────────────
+const FACE = `<path d="M200,84 C260,84 300,128 300,185 C300,234 278,268 248,285 C233,294 217,299 200,299 C183,299 167,294 152,285 C122,268 100,234 100,185 C100,128 140,84 200,84Z" fill="SKIN_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+<path d="M152,285 Q200,310 248,285" fill="SKIN_PLACEHOLDER" stroke="none"/>`;
 
 export const HEAD_OPTIONS: AvatarOption[] = [
-  { id: "head_oval",   label: "Ovale",    svg: head(82, 96) },
-  { id: "head_round",  label: "Rotondo",  svg: head(90, 90, 175) },
-  { id: "head_square", label: "Squadrato",svg: wrap(`
-    <rect x="115" y="80" width="170" height="185" rx="42" fill="SKIN_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2.5"/>
-  `)},
+  { id:"head_oval",   label:"Ovale",     svg: w(FACE) },
+  { id:"head_round",  label:"Rotondo",   svg: w(`
+    <circle cx="200" cy="192" r="110" fill="SKIN_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+  `) },
+  { id:"head_square", label:"Squadrato", svg: w(`
+    <path d="M200,84 C248,84 300,118 302,172 C305,228 290,268 254,286 C237,294 220,300 200,300 C180,300 163,294 146,286 C110,268 95,228 98,172 C100,118 152,84 200,84Z" fill="SKIN_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+  `) },
 ];
 
-// ─── Ears ─────────────────────────────────────────────────────────────────────
-const ears = (cy = 172, rx = 82) => wrap(`
-  <ellipse cx="${200 - rx - 5}" cy="${cy}" rx="14" ry="20" fill="SKIN_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-  <ellipse cx="${200 + rx + 5}" cy="${cy}" rx="14" ry="20" fill="SKIN_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-`);
-
-export const EARS_OPTIONS: AvatarOption[] = [
-  { id: "ears_normal", label: "Normali", svg: ears(172, 82) },
-  { id: "ears_small",  label: "Piccole", svg: ears(174, 82).replace(/rx="14"/g,'rx="10"').replace(/ry="20"/g,'ry="14"') },
+// ─── EYEBROWS ─────────────────────────────────────────────────────────────────
+export const EYEBROWS_OPTIONS: AvatarOption[] = [
+  { id:"brow_arch",   label:"Arcuate", svg: w(`
+    <path d="M136,150 Q162,138 186,148" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="6" stroke-linecap="round"/>
+    <path d="M214,148 Q238,138 264,150" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="6" stroke-linecap="round"/>
+  `) },
+  { id:"brow_flat",   label:"Dritte",  svg: w(`
+    <path d="M136,152 L186,149" stroke="HAIR_PLACEHOLDER" stroke-width="6" stroke-linecap="round"/>
+    <path d="M214,149 L264,152" stroke="HAIR_PLACEHOLDER" stroke-width="6" stroke-linecap="round"/>
+  `) },
+  { id:"brow_thick",  label:"Spesse",  svg: w(`
+    <path d="M133,154 Q162,140 188,150" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="10" stroke-linecap="round"/>
+    <path d="M212,150 Q238,140 267,154" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="10" stroke-linecap="round"/>
+  `) },
+  { id:"brow_raised", label:"Alzate",  svg: w(`
+    <path d="M136,155 Q162,140 186,152" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="6" stroke-linecap="round"/>
+    <path d="M214,152 Q238,140 264,155" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="6" stroke-linecap="round"/>
+    <path d="M136,155 Q162,140 186,152" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="6" stroke-linecap="round" opacity=".4"/>
+  `) },
 ];
 
-// ─── Beard ────────────────────────────────────────────────────────────────────
-export const BEARD_OPTIONS: AvatarOption[] = [
-  { id: "beard_none",  label: "Nessuna", svg: wrap("") },
-  { id: "beard_short", label: "Corta",   svg: wrap(`
-    <path d="M138,230 Q145,265 200,272 Q255,265 262,230 Q240,245 200,247 Q160,245 138,230Z" fill="HAIR_PLACEHOLDER" opacity="0.9"/>
-  `)},
-  { id: "beard_full",  label: "Lunga",   svg: wrap(`
-    <path d="M132,225 Q130,285 200,300 Q270,285 268,225 Q245,250 200,255 Q155,250 132,225Z" fill="HAIR_PLACEHOLDER" opacity="0.9"/>
-    <path d="M165,295 Q200,330 235,295 Q218,320 200,325 Q182,320 165,295Z" fill="HAIR_PLACEHOLDER" opacity="0.9"/>
-  `)},
-  { id: "beard_mustache", label: "Baffi", svg: wrap(`
-    <path d="M172,218 Q185,228 200,222 Q215,228 228,218 Q218,232 200,228 Q182,232 172,218Z" fill="HAIR_PLACEHOLDER" opacity="0.9"/>
-  `)},
-  { id: "beard_goatee", label: "Pizzetto", svg: wrap(`
-    <ellipse cx="200" cy="250" rx="22" ry="16" fill="HAIR_PLACEHOLDER" opacity="0.9"/>
-    <path d="M172,218 Q185,228 200,222 Q215,228 228,218 Q218,232 200,228 Q182,232 172,218Z" fill="HAIR_PLACEHOLDER" opacity="0.9"/>
-  `)},
-];
-
-// ─── Mouth ────────────────────────────────────────────────────────────────────
-export const MOUTH_OPTIONS: AvatarOption[] = [
-  { id: "mouth_smile",  label: "Sorriso",  svg: wrap(`
-    <path d="M172,220 Q200,242 228,220" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round"/>
-    <path d="M174,222 Q200,244 226,222 Q200,252 174,222Z" fill="#e74c3c" opacity="0.7"/>
-  `)},
-  { id: "mouth_neutral",label: "Neutra",   svg: wrap(`
-    <path d="M178,228 L222,228" stroke="#c0392b" stroke-width="3" stroke-linecap="round"/>
-  `)},
-  { id: "mouth_open",   label: "Aperta",   svg: wrap(`
-    <path d="M170,218 Q200,242 230,218 Q220,248 200,250 Q180,248 170,218Z" fill="#c0392b"/>
-    <path d="M174,234 L226,234" stroke="#e8c4b8" stroke-width="3"/>
-  `)},
-  { id: "mouth_smirk",  label: "Sorrisetto",svg: wrap(`
-    <path d="M178,225 Q208,238 228,220" fill="none" stroke="#c0392b" stroke-width="3" stroke-linecap="round"/>
-  `)},
-];
-
-// ─── Nose ─────────────────────────────────────────────────────────────────────
-export const NOSE_OPTIONS: AvatarOption[] = [
-  { id: "nose_small",  label: "Piccolo", svg: wrap(`
-    <path d="M193,178 Q196,198 188,205 Q200,210 212,205 Q204,198 207,178" fill="none" stroke="SKIN_PLACEHOLDER" stroke-width="3" stroke-linecap="round" filter="brightness(0.75)"/>
-    <ellipse cx="193" cy="204" rx="7" ry="5" fill="none" stroke="#c9956e" stroke-width="2"/>
-    <ellipse cx="207" cy="204" rx="7" ry="5" fill="none" stroke="#c9956e" stroke-width="2"/>
-  `)},
-  { id: "nose_medium", label: "Medio",   svg: wrap(`
-    <path d="M191,175 Q193,200 182,210 Q200,216 218,210 Q207,200 209,175" fill="none" stroke="#c9956e" stroke-width="2.5" stroke-linecap="round"/>
-    <path d="M182,210 Q191,218 200,215 Q209,218 218,210" fill="none" stroke="#c9956e" stroke-width="2.5"/>
-  `)},
-  { id: "nose_wide",   label: "Largo",   svg: wrap(`
-    <path d="M195,175 Q195,198 180,210 Q200,220 220,210 Q205,198 205,175" fill="none" stroke="#c9956e" stroke-width="2.5" stroke-linecap="round"/>
-    <ellipse cx="184" cy="210" rx="10" ry="7" fill="none" stroke="#c9956e" stroke-width="2"/>
-    <ellipse cx="216" cy="210" rx="10" ry="7" fill="none" stroke="#c9956e" stroke-width="2"/>
-  `)},
-];
-
-// ─── Eyes ─────────────────────────────────────────────────────────────────────
-const eye = (lx: number, rx: number, cy: number, style: string) => wrap(`
-  ${style.replace(/LX/g, String(lx)).replace(/RX/g, String(rx)).replace(/CY/g, String(cy))}
-`);
-
-const normalEye = `
-  <ellipse cx="LX" cy="CY" rx="18" ry="13" fill="white" stroke="#1a1a2e" stroke-width="2"/>
-  <circle cx="LX" cy="CY" r="8" fill="#4a7fc1"/>
-  <circle cx="LX" cy="CY" r="4" fill="#1a1a2e"/>
-  <circle cx="${"LX".replace("LX","")+"LX"}" cy="${"CY"}" r="2" fill="white" transform="translate(3,-3)"/>
-  <ellipse cx="RX" cy="CY" rx="18" ry="13" fill="white" stroke="#1a1a2e" stroke-width="2"/>
-  <circle cx="RX" cy="CY" r="8" fill="#4a7fc1"/>
-  <circle cx="RX" cy="CY" r="4" fill="#1a1a2e"/>
-`;
+// ─── EYES ─────────────────────────────────────────────────────────────────────
+const EYE_L = (iris="IRIS") => `
+  <ellipse cx="162" cy="172" rx="23" ry="17" fill="white" stroke="#1a0e05" stroke-width="2"/>
+  <circle  cx="162" cy="173" r="13" fill="${iris}"/>
+  <circle  cx="162" cy="173" r="8"  fill="#0d0500"/>
+  <circle  cx="167" cy="168" r="4"  fill="white"/>
+  <path d="M139,166 Q162,156 185,166" fill="none" stroke="#1a0e05" stroke-width="3" stroke-linecap="round"/>
+  <path d="M140,179 Q162,186 184,179" fill="none" stroke="#1a0e05" stroke-width="1.5" stroke-linecap="round"/>`;
+const EYE_R = (iris="IRIS") => `
+  <ellipse cx="238" cy="172" rx="23" ry="17" fill="white" stroke="#1a0e05" stroke-width="2"/>
+  <circle  cx="238" cy="173" r="13" fill="${iris}"/>
+  <circle  cx="238" cy="173" r="8"  fill="#0d0500"/>
+  <circle  cx="243" cy="168" r="4"  fill="white"/>
+  <path d="M215,166 Q238,156 261,166" fill="none" stroke="#1a0e05" stroke-width="3" stroke-linecap="round"/>
+  <path d="M216,179 Q238,186 260,179" fill="none" stroke="#1a0e05" stroke-width="1.5" stroke-linecap="round"/>`;
 
 export const EYES_OPTIONS: AvatarOption[] = [
-  { id: "eyes_normal", label: "Normali", svg: wrap(`
-    <ellipse cx="163" cy="158" rx="20" ry="14" fill="white" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="163" cy="158" r="9" fill="#4a7fc1"/>
-    <circle cx="163" cy="158" r="5" fill="#1a1a2e"/>
-    <circle cx="166" cy="155" r="2.5" fill="white"/>
-    <ellipse cx="237" cy="158" rx="20" ry="14" fill="white" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="237" cy="158" r="9" fill="#4a7fc1"/>
-    <circle cx="237" cy="158" r="5" fill="#1a1a2e"/>
-    <circle cx="240" cy="155" r="2.5" fill="white"/>
-  `)},
-  { id: "eyes_wink", label: "Ammiccanti", svg: wrap(`
-    <ellipse cx="163" cy="160" rx="20" ry="14" fill="white" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="163" cy="160" r="9" fill="#4a7fc1"/>
-    <circle cx="163" cy="160" r="5" fill="#1a1a2e"/>
-    <circle cx="166" cy="157" r="2.5" fill="white"/>
-    <path d="M218,155 Q237,148 256,155" fill="none" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"/>
-    <path d="M218,160 Q237,152 256,160" fill="none" stroke="#1a1a2e" stroke-width="2.5"/>
-  `)},
-  { id: "eyes_large", label: "Grandi", svg: wrap(`
-    <ellipse cx="163" cy="157" rx="24" ry="20" fill="white" stroke="#1a1a2e" stroke-width="2.5"/>
-    <circle cx="163" cy="157" r="13" fill="#4a7fc1"/>
-    <circle cx="163" cy="157" r="7" fill="#1a1a2e"/>
-    <circle cx="167" cy="153" r="3" fill="white"/>
-    <ellipse cx="237" cy="157" rx="24" ry="20" fill="white" stroke="#1a1a2e" stroke-width="2.5"/>
-    <circle cx="237" cy="157" r="13" fill="#4a7fc1"/>
-    <circle cx="237" cy="157" r="7" fill="#1a1a2e"/>
-    <circle cx="241" cy="153" r="3" fill="white"/>
-  `)},
-  { id: "eyes_almond", label: "Mandorla", svg: wrap(`
-    <path d="M140,162 Q163,148 186,162 Q163,172 140,162Z" fill="white" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="163" cy="162" r="7" fill="#4a7fc1"/>
-    <circle cx="163" cy="162" r="4" fill="#1a1a2e"/>
-    <path d="M214,162 Q237,148 260,162 Q237,172 214,162Z" fill="white" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="237" cy="162" r="7" fill="#4a7fc1"/>
-    <circle cx="237" cy="162" r="4" fill="#1a1a2e"/>
-  `)},
+  { id:"eyes_brown",  label:"Marroni", svg: w(EYE_L("#7B4F2E")+EYE_R("#7B4F2E")) },
+  { id:"eyes_blue",   label:"Blu",     svg: w(EYE_L("#4A7FC1")+EYE_R("#4A7FC1")) },
+  { id:"eyes_green",  label:"Verdi",   svg: w(EYE_L("#4A8C5C")+EYE_R("#4A8C5C")) },
+  { id:"eyes_dark",   label:"Scuri",   svg: w(EYE_L("#2A1800")+EYE_R("#2A1800")) },
+  { id:"eyes_wink",   label:"Ammicc.", svg: w(`
+    ${EYE_L("#7B4F2E")}
+    <path d="M215,172 Q238,162 261,172" fill="none" stroke="#1a0e05" stroke-width="3" stroke-linecap="round"/>
+    <path d="M215,172 Q238,180 261,172" fill="none" stroke="#1a0e05" stroke-width="2" stroke-linecap="round"/>
+  `) },
+  { id:"eyes_large",  label:"Grandi",  svg: w(`
+    <ellipse cx="162" cy="172" rx="27" ry="22" fill="white" stroke="#1a0e05" stroke-width="2"/>
+    <circle  cx="162" cy="173" r="16" fill="#7B4F2E"/>
+    <circle  cx="162" cy="173" r="10" fill="#0d0500"/>
+    <circle  cx="168" cy="167" r="5"  fill="white"/>
+    <path d="M135,164 Q162,153 189,164" fill="none" stroke="#1a0e05" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="238" cy="172" rx="27" ry="22" fill="white" stroke="#1a0e05" stroke-width="2"/>
+    <circle  cx="238" cy="173" r="16" fill="#7B4F2E"/>
+    <circle  cx="238" cy="173" r="10" fill="#0d0500"/>
+    <circle  cx="244" cy="167" r="5"  fill="white"/>
+    <path d="M211,164 Q238,153 265,164" fill="none" stroke="#1a0e05" stroke-width="3" stroke-linecap="round"/>
+  `) },
 ];
 
-// ─── Eyebrows ─────────────────────────────────────────────────────────────────
-export const EYEBROWS_OPTIONS: AvatarOption[] = [
-  { id: "brow_straight", label: "Dritte", svg: wrap(`
-    <path d="M140,138 L184,136" stroke="HAIR_PLACEHOLDER" stroke-width="5" stroke-linecap="round"/>
-    <path d="M216,136 L260,138" stroke="HAIR_PLACEHOLDER" stroke-width="5" stroke-linecap="round"/>
-  `)},
-  { id: "brow_arched",   label: "Arcuate", svg: wrap(`
-    <path d="M140,142 Q163,130 184,138" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="5" stroke-linecap="round"/>
-    <path d="M216,138 Q237,130 260,142" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="5" stroke-linecap="round"/>
-  `)},
-  { id: "brow_thick",    label: "Spesse",  svg: wrap(`
-    <path d="M138,140 Q163,130 186,138" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="8" stroke-linecap="round"/>
-    <path d="M214,138 Q237,130 262,140" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="8" stroke-linecap="round"/>
-  `)},
+// ─── NOSE ─────────────────────────────────────────────────────────────────────
+export const NOSE_OPTIONS: AvatarOption[] = [
+  { id:"nose_button", label:"Piccolo", svg: w(`
+    <ellipse cx="190" cy="217" rx="9" ry="6"  fill="none" stroke="#c8895a" stroke-width="2"/>
+    <ellipse cx="210" cy="217" rx="9" ry="6"  fill="none" stroke="#c8895a" stroke-width="2"/>
+    <path d="M190,210 Q200,195 210,210" fill="none" stroke="#c8895a" stroke-width="2" stroke-linecap="round"/>
+  `) },
+  { id:"nose_medium", label:"Medio",   svg: w(`
+    <path d="M194,180 Q190,205 180,216 Q200,224 220,216 Q210,205 206,180" fill="none" stroke="#c8895a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M180,216 Q190,222 200,220 Q210,222 220,216" fill="none" stroke="#c8895a" stroke-width="2.5" stroke-linecap="round"/>
+  `) },
+  { id:"nose_wide",   label:"Largo",   svg: w(`
+    <path d="M197,178 Q190,205 175,217 Q200,228 225,217 Q210,205 203,178" fill="none" stroke="#c8895a" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="178" cy="217" rx="12" ry="8" fill="none" stroke="#c8895a" stroke-width="2"/>
+    <ellipse cx="222" cy="217" rx="12" ry="8" fill="none" stroke="#c8895a" stroke-width="2"/>
+  `) },
 ];
 
-// ─── Details ──────────────────────────────────────────────────────────────────
+// ─── MOUTH ────────────────────────────────────────────────────────────────────
+export const MOUTH_OPTIONS: AvatarOption[] = [
+  { id:"mouth_bigsmile", label:"Sorriso",  svg: w(`
+    <path d="M164,234 Q200,262 236,234" fill="none" stroke="#1a0e05" stroke-width="3" stroke-linecap="round"/>
+    <path d="M166,236 Q200,264 234,236 Q200,272 166,236Z" fill="#e8c4b8"/>
+    <path d="M172,250 L228,250" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    <path d="M164,234 Q200,262 236,234" fill="none" stroke="#1a0e05" stroke-width="3" stroke-linecap="round"/>
+  `) },
+  { id:"mouth_smile",    label:"Chiuso",   svg: w(`
+    <path d="M170,238 Q200,258 230,238" fill="none" stroke="#1a0e05" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M172,240 Q200,260 228,240 Q200,268 172,240Z" fill="#c97b7b" opacity=".6"/>
+  `) },
+  { id:"mouth_neutral",  label:"Neutra",   svg: w(`
+    <path d="M175,244 Q200,250 225,244" fill="none" stroke="#1a0e05" stroke-width="3" stroke-linecap="round"/>
+    <path d="M176,245 Q200,251 224,245 Q200,258 176,245Z" fill="#c97b7b" opacity=".5"/>
+  `) },
+  { id:"mouth_smirk",   label:"Sorris.",   svg: w(`
+    <path d="M175,242 Q205,254 232,238" fill="none" stroke="#1a0e05" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M176,243 Q205,255 230,240 Q205,263 176,243Z" fill="#c97b7b" opacity=".6"/>
+  `) },
+];
+
+// ─── BEARD ────────────────────────────────────────────────────────────────────
+export const BEARD_OPTIONS: AvatarOption[] = [
+  { id:"beard_none",   label:"Nessuna", svg: w(``) },
+  { id:"beard_stubble",label:"Barba",   svg: w(`
+    <path d="M134,232 Q130,275 152,291 Q175,302 200,304 Q225,302 248,291 Q270,275 266,232 Q248,248 200,252 Q152,248 134,232Z" fill="HAIR_PLACEHOLDER" opacity=".82"/>
+    <path d="M152,291 Q175,302 200,304 Q225,302 248,291 Q235,308 200,310 Q165,308 152,291Z" fill="HAIR_PLACEHOLDER" opacity=".82"/>
+  `) },
+  { id:"beard_full",   label:"Lunga",   svg: w(`
+    <path d="M128,225 Q122,285 150,305 Q174,320 200,322 Q226,320 250,305 Q278,285 272,225 Q252,252 200,256 Q148,252 128,225Z" fill="HAIR_PLACEHOLDER" opacity=".9"/>
+    <path d="M170,318 Q200,345 230,318 Q218,338 200,342 Q182,338 170,318Z" fill="HAIR_PLACEHOLDER" opacity=".9"/>
+    <path d="M150,305 Q174,320 200,322 Q226,320 250,305 Q235,328 200,332 Q165,328 150,305Z" fill="HAIR_PLACEHOLDER" opacity=".9"/>
+  `) },
+  { id:"beard_mustache",label:"Baffi",  svg: w(`
+    <path d="M168,232 Q184,242 200,236 Q216,242 232,232 Q220,248 200,244 Q180,248 168,232Z" fill="HAIR_PLACEHOLDER" opacity=".9"/>
+  `) },
+  { id:"beard_goatee", label:"Pizzetto",svg: w(`
+    <path d="M168,232 Q184,242 200,236 Q216,242 232,232 Q220,248 200,244 Q180,248 168,232Z" fill="HAIR_PLACEHOLDER" opacity=".9"/>
+    <ellipse cx="200" cy="272" rx="24" ry="20" fill="HAIR_PLACEHOLDER" opacity=".9"/>
+    <path d="M180,258 Q200,266 220,258 Q220,282 200,288 Q180,282 180,258Z" fill="HAIR_PLACEHOLDER" opacity=".9"/>
+  `) },
+];
+
+// ─── DETAILS ─────────────────────────────────────────────────────────────────
 export const DETAILS_OPTIONS: AvatarOption[] = [
-  { id: "details_none",      label: "Nessuno",    svg: wrap("") },
-  { id: "details_freckles",  label: "Lentiggini", svg: wrap(`
-    <circle cx="175" cy="192" r="3" fill="#c97b5a" opacity="0.6"/>
-    <circle cx="185" cy="198" r="2.5" fill="#c97b5a" opacity="0.6"/>
-    <circle cx="168" cy="200" r="2" fill="#c97b5a" opacity="0.6"/>
-    <circle cx="225" cy="192" r="3" fill="#c97b5a" opacity="0.6"/>
-    <circle cx="215" cy="198" r="2.5" fill="#c97b5a" opacity="0.6"/>
-    <circle cx="232" cy="200" r="2" fill="#c97b5a" opacity="0.6"/>
-  `)},
-  { id: "details_blush",     label: "Guance",     svg: wrap(`
-    <ellipse cx="152" cy="195" rx="22" ry="12" fill="#f87171" opacity="0.25"/>
-    <ellipse cx="248" cy="195" rx="22" ry="12" fill="#f87171" opacity="0.25"/>
-  `)},
-  { id: "details_mole",      label: "Neo",         svg: wrap(`
-    <circle cx="226" cy="208" r="4" fill="#3a2a1a"/>
-  `)},
-  { id: "details_bindi",     label: "Bindi",       svg: wrap(`
-    <circle cx="200" cy="128" r="8" fill="#c0392b"/>
-    <circle cx="200" cy="128" r="4" fill="#e74c3c"/>
-  `)},
+  { id:"det_none",    label:"Nessuno",    svg: w(``) },
+  { id:"det_freckle", label:"Lentiggini", svg: w(`
+    <circle cx="172" cy="197" r="3.5" fill="#c97b5a" opacity=".55"/>
+    <circle cx="184" cy="204" r="3"   fill="#c97b5a" opacity=".55"/>
+    <circle cx="165" cy="205" r="2.5" fill="#c97b5a" opacity=".55"/>
+    <circle cx="178" cy="210" r="2.5" fill="#c97b5a" opacity=".45"/>
+    <circle cx="228" cy="197" r="3.5" fill="#c97b5a" opacity=".55"/>
+    <circle cx="216" cy="204" r="3"   fill="#c97b5a" opacity=".55"/>
+    <circle cx="235" cy="205" r="2.5" fill="#c97b5a" opacity=".55"/>
+    <circle cx="222" cy="210" r="2.5" fill="#c97b5a" opacity=".45"/>
+  `) },
+  { id:"det_blush",  label:"Guance",     svg: w(`
+    <ellipse cx="148" cy="200" rx="26" ry="16" fill="#f87171" opacity=".22"/>
+    <ellipse cx="252" cy="200" rx="26" ry="16" fill="#f87171" opacity=".22"/>
+  `) },
+  { id:"det_mole",   label:"Neo",        svg: w(`<circle cx="228" cy="212" r="4.5" fill="#2a1400"/>`) },
+  { id:"det_bindi",  label:"Bindi",      svg: w(`
+    <circle cx="200" cy="128" r="10" fill="#c0392b"/>
+    <circle cx="200" cy="128" r="5"  fill="#e74c3c"/>
+    <circle cx="200" cy="128" r="2"  fill="#c0392b"/>
+  `) },
 ];
 
-// ─── Hair back ────────────────────────────────────────────────────────────────
+// ─── HAIR BACK (long/dreads — drawn before head) ──────────────────────────────
 export const HAIR_BACK_OPTIONS: AvatarOption[] = [
-  { id: "hair_back_none",    label: "Nessuno",     svg: wrap("") },
-  { id: "hair_back_long",    label: "Lunghi",      svg: wrap(`
-    <path d="M118,115 Q80,200 90,350 L110,360 Q115,240 140,175" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="1.5"/>
-    <path d="M282,115 Q320,200 310,350 L290,360 Q285,240 260,175" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="1.5"/>
-  `)},
-  { id: "hair_back_ponytail",label: "Coda alta",   svg: wrap(`
-    <path d="M190,82 Q195,140 192,320 Q198,340 200,320 Q202,340 208,320 Q205,140 210,82" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="1.5"/>
-    <ellipse cx="200" cy="84" rx="18" ry="10" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-  `)},
-  { id: "hair_back_dreads",  label: "Dreadlock",   svg: wrap(`
-    <path d="M118,120 Q85,190 88,320 Q100,340 105,310 Q108,230 128,165" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M125,125 Q100,195 103,310 Q113,330 118,305 Q120,240 138,170" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M282,120 Q315,190 312,320 Q300,340 295,310 Q292,230 272,165" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M275,125 Q300,195 297,310 Q287,330 282,305 Q280,240 262,170" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-  `)},
-  { id: "hair_back_braids",  label: "Trecce",      svg: wrap(`
-    <path d="M120,120 Q110,200 108,340 Q118,355 122,330 Q124,240 135,170" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="1.5"/>
-    <path d="M280,120 Q290,200 292,340 Q282,355 278,330 Q276,240 265,170" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="1.5"/>
-    <line x1="112" y1="170" x2="134" y2="172" stroke="#1a1a2e" stroke-width="2"/>
-    <line x1="111" y1="200" x2="133" y2="202" stroke="#1a1a2e" stroke-width="2"/>
-    <line x1="110" y1="230" x2="133" y2="232" stroke="#1a1a2e" stroke-width="2"/>
-    <line x1="266" y1="170" x2="288" y2="172" stroke="#1a1a2e" stroke-width="2"/>
-    <line x1="267" y1="200" x2="289" y2="202" stroke="#1a1a2e" stroke-width="2"/>
-    <line x1="267" y1="230" x2="290" y2="232" stroke="#1a1a2e" stroke-width="2"/>
-  `)},
+  { id:"hb_none",    label:"Nessuno",    svg: w(``) },
+  { id:"hb_long",    label:"Lunghi",     svg: w(`
+    <path d="M103,155 C85,210 82,310 90,380 Q105,390 112,375 Q108,300 118,220 Q128,180 128,155Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <path d="M297,155 C315,210 318,310 310,380 Q295,390 288,375 Q292,300 282,220 Q272,180 272,155Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+  `) },
+  { id:"hb_ponytail",label:"Coda",       svg: w(`
+    <path d="M182,82 Q178,150 175,340 Q188,360 200,340 Q212,360 225,340 Q222,150 218,82Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <rect x="184" y="75" width="32" height="14" rx="7" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <rect x="186" y="72" width="28" height="8" rx="4" fill="#FF4A24"/>
+  `) },
+  { id:"hb_dreads",  label:"Dreadlock",  svg: w(`
+    <path d="M108,148 C88,200 80,310 86,395 Q96,400 104,388 Q100,300 112,215 Q120,175 122,148Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M120,140 C105,195 99,305 106,385 Q114,395 122,382 Q118,296 128,212 Q135,172 136,140Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M133,136 C122,188 118,298 125,375 Q133,388 141,375 Q136,290 145,208 Q151,168 150,136Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M292,148 C312,200 320,310 314,395 Q304,400 296,388 Q300,300 288,215 Q280,175 278,148Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M280,140 C295,195 301,305 294,385 Q286,395 278,382 Q282,296 272,212 Q265,172 264,140Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M267,136 C278,188 282,298 275,375 Q267,388 259,375 Q264,290 255,208 Q249,168 250,136Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+  `) },
+  { id:"hb_braids",  label:"Trecce",     svg: w(`
+    <path d="M106,152 C88,210 85,320 92,398 Q104,402 110,390 Q105,308 116,226 Q124,180 124,152Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <line x1="108" y1="185" x2="122" y2="187" stroke="#1a0e05" stroke-width="2.5"/>
+    <line x1="107" y1="215" x2="121" y2="217" stroke="#1a0e05" stroke-width="2.5"/>
+    <line x1="106" y1="245" x2="120" y2="247" stroke="#1a0e05" stroke-width="2.5"/>
+    <line x1="106" y1="275" x2="119" y2="277" stroke="#1a0e05" stroke-width="2.5"/>
+    <line x1="105" y1="305" x2="118" y2="307" stroke="#1a0e05" stroke-width="2.5"/>
+    <path d="M294,152 C312,210 315,320 308,398 Q296,402 290,390 Q295,308 284,226 Q276,180 276,152Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <line x1="292" y1="185" x2="278" y2="187" stroke="#1a0e05" stroke-width="2.5"/>
+    <line x1="293" y1="215" x2="279" y2="217" stroke="#1a0e05" stroke-width="2.5"/>
+    <line x1="294" y1="245" x2="280" y2="247" stroke="#1a0e05" stroke-width="2.5"/>
+    <line x1="294" y1="275" x2="281" y2="277" stroke="#1a0e05" stroke-width="2.5"/>
+    <line x1="295" y1="305" x2="282" y2="307" stroke="#1a0e05" stroke-width="2.5"/>
+  `) },
 ];
 
-// ─── Hair front ───────────────────────────────────────────────────────────────
+// ─── HAIR FRONT ───────────────────────────────────────────────────────────────
 export const HAIR_FRONT_OPTIONS: AvatarOption[] = [
-  { id: "hair_short_side",  label: "Corti laterali", svg: wrap(`
-    <path d="M118,145 Q118,78 200,72 Q282,78 282,145 Q265,100 200,98 Q135,100 118,145Z" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M118,145 Q110,105 120,85" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M282,145 Q290,105 280,85" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-  `)},
-  { id: "hair_fringe",      label: "Frangia",        svg: wrap(`
-    <path d="M118,148 Q118,75 200,68 Q282,75 282,148 Q265,95 200,92 Q135,95 118,148Z" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M140,120 Q175,132 220,125 Q255,118 278,130" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="1"/>
-    <path d="M118,148 Q110,108 120,88" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M282,148 Q290,108 280,88" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-  `)},
-  { id: "hair_curly",       label: "Ricci",           svg: wrap(`
-    <path d="M115,148 Q112,75 200,65 Q288,75 285,148 Q270,90 200,88 Q130,90 115,148Z" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="130" cy="100" r="18" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="155" cy="80"  r="20" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="185" cy="72"  r="20" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="215" cy="72"  r="20" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="245" cy="80"  r="20" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <circle cx="270" cy="100" r="18" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-  `)},
-  { id: "hair_bald",        label: "Rasato",          svg: wrap(`
-    <path d="M118,168 Q118,78 200,72 Q282,78 282,168 Q265,110 200,108 Q135,110 118,168Z" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2" opacity="0.5"/>
-  `)},
-  { id: "hair_messy",       label: "Spettinati",      svg: wrap(`
-    <path d="M118,148 Q116,78 200,70 Q284,78 282,148 Q265,95 200,93 Q135,95 118,148Z" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M140,85 Q155,72 170,82" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="8" stroke-linecap="round"/>
-    <path d="M200,72 Q210,58 225,70" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="8" stroke-linecap="round"/>
-    <path d="M255,82 Q268,70 278,84" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="8" stroke-linecap="round"/>
-    <path d="M118,148 Q110,108 120,88" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M282,148 Q290,108 280,88" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-  `)},
-  { id: "hair_shaved",      label: "Zero",            svg: wrap(`
-    <path d="M118,155 Q118,88 200,82 Q282,88 282,155 Q265,115 200,113 Q135,115 118,155Z" fill="HAIR_PLACEHOLDER" opacity="0.4" stroke="#1a1a2e" stroke-width="1.5"/>
-  `)},
+  { id:"hf_short_side", label:"Corti lati",  svg: w(`
+    <path d="M100,168 C100,95 144,68 200,68 C256,68 300,95 300,168 C290,128 270,106 248,100 C230,96 216,94 200,94 C184,94 170,96 152,100 C130,106 110,128 100,168Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M100,168 C96,148 96,120 104,100" stroke="#1a0e05" stroke-width="2" fill="HAIR_PLACEHOLDER" stroke-linecap="round"/>
+    <path d="M300,168 C304,148 304,120 296,100" stroke="#1a0e05" stroke-width="2" fill="HAIR_PLACEHOLDER" stroke-linecap="round"/>
+    <path d="M200,68 C216,68 228,72 228,80 Q214,75 200,75 Q186,75 172,80 C172,72 184,68 200,68Z" fill="HAIR_PLACEHOLDER"/>
+  `) },
+  { id:"hf_fringe",    label:"Frangia",      svg: w(`
+    <path d="M100,168 C100,95 144,68 200,68 C256,68 300,95 300,168 C290,122 268,100 246,96 C228,92 214,90 200,90 C186,90 172,92 154,96 C132,100 110,122 100,168Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M130,116 Q165,138 200,132 Q235,138 270,116 Q248,150 200,148 Q152,150 130,116Z" fill="HAIR_PLACEHOLDER"/>
+    <path d="M100,168 C96,148 96,120 104,100" stroke="#1a0e05" stroke-width="2" fill="HAIR_PLACEHOLDER"/>
+    <path d="M300,168 C304,148 304,120 296,100" stroke="#1a0e05" stroke-width="2" fill="HAIR_PLACEHOLDER"/>
+  `) },
+  { id:"hf_curly",     label:"Ricci",        svg: w(`
+    <path d="M100,170 C100,95 144,65 200,65 C256,65 300,95 300,170 C290,120 268,98 200,95 C132,98 110,120 100,170Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <circle cx="130" cy="108" r="22" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <circle cx="155" cy="84"  r="24" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <circle cx="185" cy="72"  r="23" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <circle cx="215" cy="72"  r="23" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <circle cx="245" cy="84"  r="24" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <circle cx="270" cy="108" r="22" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M100,170 C96,148 96,120 108,102" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <path d="M300,170 C304,148 304,120 292,102" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+  `) },
+  { id:"hf_afro",      label:"Afro",         svg: w(`
+    <ellipse cx="200" cy="118" rx="115" ry="88" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M88,150 C85,120 90,95 100,80" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M312,150 C315,120 310,95 300,80" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <ellipse cx="200" cy="118" rx="115" ry="88" fill="none" stroke="#1a0e05" stroke-width="2"/>
+  `) },
+  { id:"hf_messy",     label:"Spettinati",   svg: w(`
+    <path d="M100,165 C100,95 144,68 200,68 C256,68 300,95 300,165 C290,118 268,96 200,93 C132,96 110,118 100,165Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <path d="M148,82 Q160,62 175,78" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M200,68 Q208,50 222,65" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M252,82 Q264,64 276,80" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M120,102 Q108,84 120,74" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M100,165 C96,145 97,118 106,98" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+    <path d="M300,165 C304,145 303,118 294,98" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
+  `) },
+  { id:"hf_bald",      label:"Rasato",       svg: w(`
+    <path d="M100,168 C100,98 144,72 200,72 C256,72 300,98 300,168 C292,130 272,108 200,106 C128,108 108,130 100,168Z" fill="HAIR_PLACEHOLDER" opacity=".35" stroke="#1a0e05" stroke-width="1.5"/>
+  `) },
+  { id:"hf_wavylong",  label:"Mossi",        svg: w(`
+    <path d="M100,168 C100,95 144,68 200,68 C256,68 300,95 300,168 C290,122 270,100 248,96 C228,92 200,90 200,90 C200,90 172,92 152,96 C130,100 110,122 100,168Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M100,168 C96,148 93,118 100,95 Q104,200 100,168Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M300,168 C304,148 307,118 300,95 Q296,200 300,168Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M100,168 C96,210 98,240 100,260" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="22" stroke-linecap="round"/>
+    <path d="M300,168 C304,210 302,240 300,260" fill="none" stroke="HAIR_PLACEHOLDER" stroke-width="22" stroke-linecap="round"/>
+  `) },
 ];
 
-// ─── Glasses ──────────────────────────────────────────────────────────────────
+// ─── CLOTHES ──────────────────────────────────────────────────────────────────
+export const CLOTHES_OPTIONS: AvatarOption[] = [
+  // Hoodie
+  { id:"c_hoodie_orange", label:"Felpa arancio", svg: w(`
+    <path d="M55,400 Q70,300 118,275 L168,260 Q200,278 232,260 L282,275 Q330,300 345,400Z" fill="#FF4A24" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M118,275 Q108,250 95,255 L68,288 Q88,290 96,278" fill="#FF4A24" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M282,275 Q292,250 305,255 L332,288 Q312,290 304,278" fill="#FF4A24" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M168,260 Q184,268 200,268 Q216,268 232,260 Q220,280 200,282 Q180,280 168,260Z" fill="#cc3a1a" stroke="#1a0e05" stroke-width="1.5"/>
+    <line x1="200" y1="282" x2="200" y2="400" stroke="#cc3a1a" stroke-width="4"/>
+  `) },
+  { id:"c_hoodie_navy",   label:"Felpa blu",    svg: w(`
+    <path d="M55,400 Q70,300 118,275 L168,260 Q200,278 232,260 L282,275 Q330,300 345,400Z" fill="#1E3A5F" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M118,275 Q108,250 95,255 L68,288 Q88,290 96,278" fill="#1E3A5F" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M282,275 Q292,250 305,255 L332,288 Q312,290 304,278" fill="#1E3A5F" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M168,260 Q184,268 200,268 Q216,268 232,260 Q220,280 200,282 Q180,280 168,260Z" fill="#162c48" stroke="#1a0e05" stroke-width="1.5"/>
+    <line x1="200" y1="282" x2="200" y2="400" stroke="#162c48" stroke-width="4"/>
+  `) },
+  { id:"c_hoodie_grey",   label:"Felpa grigia", svg: w(`
+    <path d="M55,400 Q70,300 118,275 L168,260 Q200,278 232,260 L282,275 Q330,300 345,400Z" fill="#6b7280" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M118,275 Q108,250 95,255 L68,288 Q88,290 96,278" fill="#6b7280" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M282,275 Q292,250 305,255 L332,288 Q312,290 304,278" fill="#6b7280" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M168,260 Q184,268 200,268 Q216,268 232,260 Q220,280 200,282 Q180,280 168,260Z" fill="#4b5563" stroke="#1a0e05" stroke-width="1.5"/>
+    <line x1="200" y1="282" x2="200" y2="400" stroke="#4b5563" stroke-width="4"/>
+  `) },
+  // T-shirt
+  { id:"c_tshirt_white",  label:"T-shirt bianca", svg: w(`
+    <path d="M65,400 Q80,308 125,284 L155,272 L155,290 Q200,308 245,290 L245,272 L275,284 Q320,308 335,400Z" fill="#f5f5f5" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M125,284 Q112,258 92,262 L65,294 Q88,294 96,282" fill="#f5f5f5" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M275,284 Q288,258 308,262 L335,294 Q312,294 304,282" fill="#f5f5f5" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M155,272 Q177,264 200,264 Q223,264 245,272" fill="none" stroke="#ddd" stroke-width="1.5"/>
+  `) },
+  { id:"c_tshirt_black",  label:"T-shirt nera",  svg: w(`
+    <path d="M65,400 Q80,308 125,284 L155,272 L155,290 Q200,308 245,290 L245,272 L275,284 Q320,308 335,400Z" fill="#1f1f1f" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M125,284 Q112,258 92,262 L65,294 Q88,294 96,282" fill="#1f1f1f" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M275,284 Q288,258 308,262 L335,294 Q312,294 304,282" fill="#1f1f1f" stroke="#1a0e05" stroke-width="2"/>
+  `) },
+  // Collared shirt
+  { id:"c_shirt_blue",    label:"Camicia blu",   svg: w(`
+    <path d="M65,400 Q78,305 122,282 L155,270 L162,285 L200,298 L238,285 L245,270 L278,282 Q322,305 335,400Z" fill="#4a7fc1" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M122,282 Q110,256 90,260 L65,290 Q88,290 96,278" fill="#4a7fc1" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M278,282 Q290,256 310,260 L335,290 Q312,290 304,278" fill="#4a7fc1" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M155,270 L162,285 L200,298" fill="none" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M245,270 L238,285 L200,298" fill="none" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M155,270 L148,262 Q168,268 200,270 Q232,268 252,262 L245,270" fill="#3a6faa" stroke="#1a0e05" stroke-width="1.5"/>
+    <circle cx="200" cy="312" r="4" fill="#3a6faa"/>
+    <circle cx="200" cy="332" r="4" fill="#3a6faa"/>
+    <circle cx="200" cy="352" r="4" fill="#3a6faa"/>
+  `) },
+  { id:"c_shirt_white",   label:"Camicia bianca",svg: w(`
+    <path d="M65,400 Q78,305 122,282 L155,270 L162,285 L200,298 L238,285 L245,270 L278,282 Q322,305 335,400Z" fill="#fafafa" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M122,282 Q110,256 90,260 L65,290 Q88,290 96,278" fill="#fafafa" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M278,282 Q290,256 310,260 L335,290 Q312,290 304,278" fill="#fafafa" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M155,270 L162,285 L200,298" fill="none" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M245,270 L238,285 L200,298" fill="none" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M155,270 L148,262 Q168,268 200,270 Q232,268 252,262 L245,270" fill="#e8e8e8" stroke="#1a0e05" stroke-width="1.5"/>
+    <circle cx="200" cy="312" r="4" fill="#ccc"/>
+    <circle cx="200" cy="332" r="4" fill="#ccc"/>
+  `) },
+  // Denim jacket
+  { id:"c_denim",         label:"Giacca denim",  svg: w(`
+    <path d="M60,400 Q75,298 118,276 L200,312 L282,276 Q325,298 340,400Z" fill="#4a6fa5" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M118,276 Q106,250 86,254 L60,285 Q82,285 90,272" fill="#4a6fa5" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M282,276 Q294,250 314,254 L340,285 Q318,285 310,272" fill="#4a6fa5" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M155,264 L164,278 L200,292 L236,278 L245,264" fill="none" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M155,264 Q168,258 200,260 Q232,258 245,264" fill="#3a5a8a" stroke="#1a0e05" stroke-width="1.5"/>
+    <path d="M164,278 L164,340" stroke="#3a5a8a" stroke-width="3"/>
+    <path d="M236,278 L236,340" stroke="#3a5a8a" stroke-width="3"/>
+    <rect x="155" y="290" width="24" height="15" rx="3" fill="#3a5a8a" stroke="#1a0e05" stroke-width="1"/>
+  `) },
+];
+
+// ─── GLASSES ─────────────────────────────────────────────────────────────────
 export const GLASSES_OPTIONS: AvatarOption[] = [
-  { id: "glasses_none",   label: "Nessuno",      svg: wrap("") },
-  { id: "glasses_round",  label: "Rotondi",      svg: wrap(`
-    <circle cx="163" cy="162" r="26" fill="none" stroke="#1a1a2e" stroke-width="3.5"/>
-    <circle cx="237" cy="162" r="26" fill="none" stroke="#1a1a2e" stroke-width="3.5"/>
-    <line x1="189" y1="162" x2="211" y2="162" stroke="#1a1a2e" stroke-width="3"/>
-    <line x1="113" y1="158" x2="137" y2="160" stroke="#1a1a2e" stroke-width="3"/>
-    <line x1="263" y1="160" x2="287" y2="158" stroke="#1a1a2e" stroke-width="3"/>
-    <circle cx="163" cy="162" r="26" fill="#a8d8f0" opacity="0.15"/>
-    <circle cx="237" cy="162" r="26" fill="#a8d8f0" opacity="0.15"/>
-  `)},
-  { id: "glasses_rect",   label: "Rettangolari", svg: wrap(`
-    <rect x="136" y="147" width="54" height="32" rx="6" fill="#a8d8f0" fill-opacity="0.15" stroke="#1a1a2e" stroke-width="3.5"/>
-    <rect x="210" y="147" width="54" height="32" rx="6" fill="#a8d8f0" fill-opacity="0.15" stroke="#1a1a2e" stroke-width="3.5"/>
-    <line x1="190" y1="163" x2="210" y2="163" stroke="#1a1a2e" stroke-width="3"/>
-    <line x1="110" y1="158" x2="136" y2="160" stroke="#1a1a2e" stroke-width="3"/>
-    <line x1="264" y1="160" x2="290" y2="158" stroke="#1a1a2e" stroke-width="3"/>
-  `)},
-  { id: "glasses_sun",    label: "Da sole",      svg: wrap(`
-    <circle cx="163" cy="162" r="26" fill="#1a1a2e" opacity="0.85" stroke="#1a1a2e" stroke-width="3"/>
-    <circle cx="237" cy="162" r="26" fill="#1a1a2e" opacity="0.85" stroke="#1a1a2e" stroke-width="3"/>
-    <line x1="189" y1="162" x2="211" y2="162" stroke="#1a1a2e" stroke-width="3"/>
-    <line x1="113" y1="158" x2="137" y2="160" stroke="#1a1a2e" stroke-width="3"/>
-    <line x1="263" y1="160" x2="287" y2="158" stroke="#1a1a2e" stroke-width="3"/>
-  `)},
+  { id:"gl_none",   label:"Nessuno",      svg: w(``) },
+  { id:"gl_round",  label:"Rotondi",      svg: w(`
+    <circle cx="162" cy="174" r="30" fill="#a8d8f0" fill-opacity=".18" stroke="#1a0e05" stroke-width="4"/>
+    <circle cx="238" cy="174" r="30" fill="#a8d8f0" fill-opacity=".18" stroke="#1a0e05" stroke-width="4"/>
+    <line x1="192" y1="174" x2="208" y2="174" stroke="#1a0e05" stroke-width="3.5"/>
+    <line x1="108" y1="168" x2="132" y2="172" stroke="#1a0e05" stroke-width="3.5"/>
+    <line x1="268" y1="172" x2="292" y2="168" stroke="#1a0e05" stroke-width="3.5"/>
+  `) },
+  { id:"gl_rect",   label:"Rettangolari", svg: w(`
+    <rect x="132" y="158" width="60" height="36" rx="7" fill="#a8d8f0" fill-opacity=".18" stroke="#1a0e05" stroke-width="4"/>
+    <rect x="208" y="158" width="60" height="36" rx="7" fill="#a8d8f0" fill-opacity=".18" stroke="#1a0e05" stroke-width="4"/>
+    <line x1="192" y1="176" x2="208" y2="176" stroke="#1a0e05" stroke-width="3.5"/>
+    <line x1="108" y1="168" x2="132" y2="172" stroke="#1a0e05" stroke-width="3.5"/>
+    <line x1="268" y1="172" x2="292" y2="168" stroke="#1a0e05" stroke-width="3.5"/>
+  `) },
+  { id:"gl_sun",    label:"Da sole",      svg: w(`
+    <circle cx="162" cy="174" r="30" fill="#1a0e05" fill-opacity=".88" stroke="#1a0e05" stroke-width="4"/>
+    <circle cx="238" cy="174" r="30" fill="#1a0e05" fill-opacity=".88" stroke="#1a0e05" stroke-width="4"/>
+    <line x1="192" y1="174" x2="208" y2="174" stroke="#1a0e05" stroke-width="3.5"/>
+    <line x1="108" y1="168" x2="132" y2="172" stroke="#1a0e05" stroke-width="3.5"/>
+    <line x1="268" y1="172" x2="292" y2="168" stroke="#1a0e05" stroke-width="3.5"/>
+  `) },
+  { id:"gl_wire",   label:"Sottili",      svg: w(`
+    <circle cx="162" cy="174" r="26" fill="none" stroke="#8B6914" stroke-width="2.5"/>
+    <circle cx="238" cy="174" r="26" fill="none" stroke="#8B6914" stroke-width="2.5"/>
+    <line x1="188" y1="174" x2="212" y2="174" stroke="#8B6914" stroke-width="2.5"/>
+    <line x1="112" y1="170" x2="136" y2="172" stroke="#8B6914" stroke-width="2.5"/>
+    <line x1="264" y1="172" x2="288" y2="170" stroke="#8B6914" stroke-width="2.5"/>
+  `) },
 ];
 
-// ─── Accessories ─────────────────────────────────────────────────────────────
+// ─── ACCESSORIES ─────────────────────────────────────────────────────────────
 export const ACCESSORIES_OPTIONS: AvatarOption[] = [
-  { id: "acc_none",     label: "Nessuno",   svg: wrap("") },
-  { id: "acc_headphones", label: "Cuffie", svg: wrap(`
-    <path d="M118,162 Q118,75 200,72 Q282,75 282,162" fill="none" stroke="#2a2a2a" stroke-width="10" stroke-linecap="round"/>
-    <rect x="105" y="148" width="26" height="38" rx="10" fill="#FF4A24" stroke="#1a1a2e" stroke-width="2"/>
-    <rect x="269" y="148" width="26" height="38" rx="10" fill="#FF4A24" stroke="#1a1a2e" stroke-width="2"/>
-  `)},
-  { id: "acc_hijab",   label: "Velo",      svg: wrap(`
-    <path d="M110,145 Q110,72 200,68 Q290,72 290,145 Q290,240 270,290 Q240,320 200,325 Q160,320 130,290 Q110,240 110,145Z" fill="HAIR_PLACEHOLDER" stroke="#1a1a2e" stroke-width="2"/>
-    <path d="M115,148 Q112,180 115,220 Q128,205 118,175Z" fill="HAIR_PLACEHOLDER" opacity="0.7"/>
-    <path d="M285,148 Q288,180 285,220 Q272,205 282,175Z" fill="HAIR_PLACEHOLDER" opacity="0.7"/>
-  `)},
-  { id: "acc_headband",label: "Cerchietto",svg: wrap(`
-    <path d="M118,128 Q118,80 200,75 Q282,80 282,128" fill="none" stroke="#FF4A24" stroke-width="12" stroke-linecap="round"/>
-  `)},
-  { id: "acc_earrings",label: "Orecchini", svg: wrap(`
-    <circle cx="113" cy="182" r="8" fill="none" stroke="#f59e0b" stroke-width="3"/>
-    <circle cx="287" cy="182" r="8" fill="none" stroke="#f59e0b" stroke-width="3"/>
-  `)},
-  { id: "acc_necklace",label: "Collana",   svg: wrap(`
-    <path d="M155,275 Q200,295 245,275" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="200" cy="295" r="6" fill="#f59e0b"/>
-  `)},
+  { id:"ac_none",       label:"Nessuno",    svg: w(``) },
+  { id:"ac_headphones", label:"Cuffie",     svg: w(`
+    <path d="M100,185 C100,100 144,68 200,68 C256,68 300,100 300,185" fill="none" stroke="#1a0e05" stroke-width="14" stroke-linecap="round"/>
+    <rect x="86"  y="168" width="34" height="46" rx="14" fill="#FF4A24" stroke="#1a0e05" stroke-width="2.5"/>
+    <rect x="280" y="168" width="34" height="46" rx="14" fill="#FF4A24" stroke="#1a0e05" stroke-width="2.5"/>
+    <rect x="90"  y="174" width="26" height="34" rx="10" fill="#cc3a1a"/>
+  `) },
+  { id:"ac_hijab",      label:"Velo",       svg: w(`
+    <path d="M100,150 C100,72 144,62 200,62 C256,62 300,72 300,150 C300,255 278,305 248,328 Q224,345 200,348 Q176,345 152,328 C122,305 100,255 100,150Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M100,155 C96,185 94,215 96,240 Q108,220 110,190Z" fill="HAIR_PLACEHOLDER"/>
+    <path d="M300,155 C304,185 306,215 304,240 Q292,220 290,190Z" fill="HAIR_PLACEHOLDER"/>
+    <path d="M100,150 Q108,165 105,185" fill="none" stroke="#1a0e05" stroke-width="1.5" opacity=".4"/>
+    <path d="M300,150 Q292,165 295,185" fill="none" stroke="#1a0e05" stroke-width="1.5" opacity=".4"/>
+  `) },
+  { id:"ac_headband",   label:"Cerchietto", svg: w(`
+    <path d="M100,138 C100,90 144,68 200,68 C256,68 300,90 300,138" fill="none" stroke="#FF4A24" stroke-width="18" stroke-linecap="round"/>
+    <path d="M100,138 C100,90 144,68 200,68 C256,68 300,90 300,138" fill="none" stroke="#cc3a1a" stroke-width="3" stroke-linecap="round" stroke-dasharray="0 32 0 32"/>
+  `) },
+  { id:"ac_earrings",   label:"Orecchini",  svg: w(`
+    <circle cx="101" cy="196" r="12" fill="none" stroke="#f59e0b" stroke-width="4"/>
+    <circle cx="299" cy="196" r="12" fill="none" stroke="#f59e0b" stroke-width="4"/>
+    <line x1="101" y1="208" x2="101" y2="220" stroke="#f59e0b" stroke-width="3"/>
+    <line x1="299" y1="208" x2="299" y2="220" stroke="#f59e0b" stroke-width="3"/>
+    <circle cx="101" cy="221" r="5" fill="#f59e0b"/>
+    <circle cx="299" cy="221" r="5" fill="#f59e0b"/>
+  `) },
+  { id:"ac_necklace",   label:"Collana",    svg: w(`
+    <path d="M155,290 Q200,318 245,290" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="200" cy="318" r="9" fill="#f59e0b" stroke="#1a0e05" stroke-width="1.5"/>
+    <circle cx="200" cy="318" r="5" fill="#fbbf24"/>
+  `) },
 ];
 
-// ─── CATEGORIES array ─────────────────────────────────────────────────────────
+// ─── CATEGORIES ───────────────────────────────────────────────────────────────
 export const CATEGORIES: AvatarCategory[] = [
-  { key: "background",   label: "Sfondo",        options: BG_OPTIONS },
-  { key: "head",         label: "Viso",           options: HEAD_OPTIONS },
-  { key: "hair_front",   label: "Capelli",        options: HAIR_FRONT_OPTIONS },
-  { key: "hair_back",    label: "Capelli retro",  options: HAIR_BACK_OPTIONS, optional: true },
-  { key: "eyes",         label: "Occhi",          options: EYES_OPTIONS },
-  { key: "eyebrows",     label: "Sopracciglia",   options: EYEBROWS_OPTIONS },
-  { key: "nose",         label: "Naso",           options: NOSE_OPTIONS },
-  { key: "mouth",        label: "Bocca",          options: MOUTH_OPTIONS },
-  { key: "beard",        label: "Barba",          options: BEARD_OPTIONS, optional: true },
-  { key: "details",      label: "Dettagli",       options: DETAILS_OPTIONS, optional: true },
-  { key: "clothes",      label: "Vestiti",        options: CLOTHES_OPTIONS },
-  { key: "glasses",      label: "Occhiali",       options: GLASSES_OPTIONS, optional: true },
-  { key: "accessories",  label: "Accessori",      options: ACCESSORIES_OPTIONS, optional: true },
-  // body and ears are auto-selected, not in tabs
-  { key: "body",         label: "Corpo",          options: BODY_OPTIONS },
-  { key: "ears",         label: "Orecchie",       options: EARS_OPTIONS },
+  { key:"background",  label:"Sfondo",        options: BG_OPTIONS },
+  { key:"head",        label:"Viso",           options: HEAD_OPTIONS },
+  { key:"hair_front",  label:"Capelli",        options: HAIR_FRONT_OPTIONS },
+  { key:"hair_back",   label:"Cap. retro",     options: HAIR_BACK_OPTIONS, optional:true },
+  { key:"eyes",        label:"Occhi",          options: EYES_OPTIONS },
+  { key:"eyebrows",    label:"Sopracciglia",   options: EYEBROWS_OPTIONS },
+  { key:"nose",        label:"Naso",           options: NOSE_OPTIONS },
+  { key:"mouth",       label:"Bocca",          options: MOUTH_OPTIONS },
+  { key:"beard",       label:"Barba",          options: BEARD_OPTIONS,  optional:true },
+  { key:"details",     label:"Dettagli",       options: DETAILS_OPTIONS,optional:true },
+  { key:"clothes",     label:"Vestiti",        options: CLOTHES_OPTIONS },
+  { key:"glasses",     label:"Occhiali",       options: GLASSES_OPTIONS,optional:true },
+  { key:"accessories", label:"Accessori",      options: ACCESSORIES_OPTIONS, optional:true },
+  { key:"body",        label:"Corpo",          options: BODY_OPTIONS },
+  { key:"ears",        label:"Orecchie",       options: EARS_OPTIONS },
 ];
 
-// ─── Default state ────────────────────────────────────────────────────────────
+// ─── DEFAULT STATE ────────────────────────────────────────────────────────────
 export const DEFAULT_STATE: AvatarState = {
   bgColor:   "#FF4A24",
   skinTone:  "#E8B88A",
   hairColor: "#1A1A1A",
   layers: {
-    background:  "bg_0",
+    background:  "bg_orange",
     body:        "body_1",
-    clothes:     "hoodie_orange",
+    clothes:     "c_hoodie_orange",
     head:        "head_oval",
-    ears:        "ears_normal",
+    ears:        "ears_1",
     beard:       "beard_none",
     mouth:       "mouth_smile",
-    nose:        "nose_medium",
-    eyes:        "eyes_normal",
-    eyebrows:    "brow_arched",
-    details:     "details_none",
-    hair_back:   "hair_back_none",
-    hair_front:  "hair_short_side",
-    glasses:     "glasses_none",
-    accessories: "acc_none",
+    nose:        "nose_button",
+    eyes:        "eyes_brown",
+    eyebrows:    "brow_arch",
+    details:     "det_none",
+    hair_back:   "hb_none",
+    hair_front:  "hf_short_side",
+    glasses:     "gl_none",
+    accessories: "ac_none",
   },
 };
 
-export const SKIN_TONES = ["#FDDBB4","#E8B88A","#C68B5A","#8D5524","#4A2810"];
+export const SKIN_TONES  = ["#FDDBB4","#E8B88A","#C68B5A","#8D5524","#4A2810"];
 export const HAIR_COLORS = ["#1A1A1A","#4A2E19","#8B5E3C","#D4A853","#C0C0C0","#4169E1","#8B008B","#2E8B57"];
 
-// ─── Render-time helpers ──────────────────────────────────────────────────────
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
 export function applyColors(svg: string, skin: string, hair: string): string {
   return svg.replace(/SKIN_PLACEHOLDER/g, skin).replace(/HAIR_PLACEHOLDER/g, hair);
 }
-
 export function getOption(key: LayerKey, id: string | null): AvatarOption | undefined {
   if (!id) return undefined;
-  const cat = CATEGORIES.find(c => c.key === key);
-  return cat?.options.find(o => o.id === id);
+  return CATEGORIES.find(c => c.key === key)?.options.find(o => o.id === id);
 }
-
 export const LAYER_ORDER: LayerKey[] = [
   "background","body","clothes","head","ears",
   "beard","mouth","nose","eyes","eyebrows",
