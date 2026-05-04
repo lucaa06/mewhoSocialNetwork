@@ -53,18 +53,32 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
   async function handleTranslate() {
     if (translated) { setTranslated(null); return; }
     setTranslating(true);
-    const lang = (navigator.language ?? "en").slice(0, 2);
-    async function translate(text: string) {
-      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=autodetect|${lang}`);
-      const json = await res.json();
-      return (json.responseData?.translatedText as string) ?? text;
+    const targetLang = (navigator.language ?? "en").slice(0, 2);
+    const sourceLang = "it";
+    if (targetLang === sourceLang) { setTranslating(false); return; }
+
+    async function translate(text: string): Promise<string> {
+      try {
+        const res = await fetch(
+          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.slice(0, 500))}&langpair=${sourceLang}|${targetLang}`,
+          { signal: AbortSignal.timeout(8000) }
+        );
+        const json = await res.json();
+        return (json.responseData?.translatedText as string) || text;
+      } catch {
+        return text;
+      }
     }
-    const [content, title] = await Promise.all([
-      translate(post.content),
-      post.title ? translate(post.title) : Promise.resolve(undefined),
-    ]);
-    setTranslated({ content, title });
-    setTranslating(false);
+
+    try {
+      const [content, title] = await Promise.all([
+        translate(post.content),
+        post.title ? translate(post.title) : Promise.resolve(undefined),
+      ]);
+      setTranslated({ content, title });
+    } finally {
+      setTranslating(false);
+    }
   }
 
   function requireAuth() {
