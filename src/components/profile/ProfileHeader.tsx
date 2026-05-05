@@ -22,7 +22,7 @@ function bannerBg(color: string | null) {
 
 const avatarShared = (roleColor: string): React.CSSProperties => ({
   width: 92, height: 92,
-  borderRadius: "28%",
+  borderRadius: "50%",
   border: "4px solid var(--card)",
   background: "var(--card)",
   overflow: "hidden",
@@ -100,7 +100,7 @@ export function ProfileHeader({ profile, followersCount, followingCount, postsCo
   const AvatarInner = () => (
     <>
       {!profile.avatar_url && !profile.avatar_emoji && (
-        <div style={{ position: "absolute", inset: 0, background: role.bg.replace(/[\d.]+\)$/, "0.18)"), borderRadius: "28%" }} />
+        <div style={{ position: "absolute", inset: 0, background: role.bg.replace(/[\d.]+\)$/, "0.18)"), borderRadius: "50%" }} />
       )}
       {profile.avatar_emoji
         ? <span style={{ fontSize: 46, lineHeight: 1, position: "relative", zIndex: 1 }}>{profile.avatar_emoji}</span>
@@ -113,7 +113,7 @@ export function ProfileHeader({ profile, followersCount, followingCount, postsCo
       }
       {isOwn && (
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ background: "rgba(0,0,0,0.35)", borderRadius: "28%", zIndex: 2 }}>
+          style={{ background: "rgba(0,0,0,0.35)", borderRadius: "50%", zIndex: 2 }}>
           <Pencil className="w-4 h-4 text-white" />
         </div>
       )}

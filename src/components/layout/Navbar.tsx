@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Plus, Bell, MessageCircle, LayoutDashboard, Settings } from "lucide-react";
+import { Search, Plus, Bell, MessageCircle, LayoutDashboard } from "lucide-react";
 import type { Profile } from "@/types/database";
 import { getAvatarFallback } from "@/lib/utils";
 import { SearchBox } from "./SearchBox";
@@ -124,15 +124,6 @@ export function Navbar({ user, unreadCount = 0, unreadMessages = 0 }: NavbarProp
                 )}
               </Link>
 
-              {/* Settings — desktop only */}
-              <Link
-                href="/settings/profile"
-                className="hidden sm:flex w-9 h-9 items-center justify-center squircle-sm transition-colors"
-                style={{ color: "var(--muted)" }}
-                aria-label="Impostazioni"
-              >
-                <Settings className="w-5 h-5" />
-              </Link>
             </>
           ) : (
             <>
