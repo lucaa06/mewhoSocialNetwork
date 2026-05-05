@@ -111,22 +111,16 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
       style={{
         background: "var(--card)",
         borderColor: "var(--border)",
-        borderRadius: "1.75rem",
+        borderRadius: "1.1rem",
         overflow: "hidden",
         position: "relative",
       }}
     >
-      {/* Subtle role-colored gradient at the bottom */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: `linear-gradient(to top, ${roleColor}14 0%, ${roleColor}05 35%, transparent 65%)`, borderRadius: "inherit" }}
-      />
+      {/* Role-color top accent strip */}
+      <div style={{ height: 3, background: `linear-gradient(90deg, ${roleColor} 0%, ${roleColor}55 60%, transparent 100%)` }} />
 
       {/* ── Author header ── */}
-      <div
-        className="flex items-center justify-between px-4 pt-3.5 pb-3"
-        style={{ borderBottom: "1px solid var(--border)" }}
-      >
+      <div className="flex items-center justify-between px-4 pt-3 pb-2.5">
         <Link href={`/u/${author?.username ?? "#"}`} className="flex items-center gap-3 group min-w-0">
           {/* Avatar: emoji > image > initials */}
           <div
@@ -194,7 +188,7 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
       </div>
 
       {/* ── Post body ── */}
-      <div className="px-4 py-3.5">
+      <div className="px-4 pt-2 pb-3" style={{ borderTop: "1px solid var(--border)" }}>
         {/* Community badge */}
         {post.community && (
           <div className="mb-2.5">

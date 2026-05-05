@@ -8,6 +8,7 @@ import { PostFeed } from "@/components/feed/PostFeed";
 import { GeoFilter } from "@/components/feed/GeoFilter";
 import { CreatePostBar } from "@/components/feed/CreatePostBar";
 import { FeedTabs } from "@/components/feed/FeedTabs";
+import { SwipeFeed } from "@/components/feed/SwipeFeed";
 import { LandingPage } from "@/components/landing/LandingPage";
 
 export const metadata: Metadata = {
@@ -147,25 +148,27 @@ export default async function HomePage({
   }));
 
   return (
-    <div className="space-y-3">
-      <CreatePostBar user={profile} />
-      <Suspense>
-        <FeedTabs currentTab={tab} />
-      </Suspense>
-      {tab !== "community" && (
-        <GeoFilter currentCountry={country} currentCity={city} detectedCountry={geo.country_code} />
-      )}
-      <PostFeed
-        posts={postsWithReactions as never[]}
-        isLoggedIn={!!user}
-        emptyMessage={
-          tab === "following"
-            ? "Non segui ancora nessuno — inizia a seguire qualcuno per vedere i loro post qui."
-            : tab === "community"
-            ? "Non hai ancora unito nessuna community — esplora e unisciti a una per vedere i post qui."
-            : undefined
-        }
-      />
-    </div>
+    <SwipeFeed currentTab={tab}>
+      <div className="space-y-3">
+        <CreatePostBar user={profile} />
+        <Suspense>
+          <FeedTabs currentTab={tab} />
+        </Suspense>
+        {tab !== "community" && (
+          <GeoFilter currentCountry={country} currentCity={city} detectedCountry={geo.country_code} />
+        )}
+        <PostFeed
+          posts={postsWithReactions as never[]}
+          isLoggedIn={!!user}
+          emptyMessage={
+            tab === "following"
+              ? "Non segui ancora nessuno — inizia a seguire qualcuno per vedere i loro post qui."
+              : tab === "community"
+              ? "Non hai ancora unito nessuna community — esplora e unisciti a una per vedere i post qui."
+              : undefined
+          }
+        />
+      </div>
+    </SwipeFeed>
   );
 }

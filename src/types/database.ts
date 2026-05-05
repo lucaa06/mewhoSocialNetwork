@@ -60,6 +60,7 @@ export interface Post {
   lng: number | null;
   visibility: PostVisibility;
   community_id: string | null;
+  link_url: string | null;
   is_hidden: boolean;
   deleted_at: string | null;
   created_at: string;
@@ -203,6 +204,22 @@ export interface Connection {
   updated_at: string;
   sender?: Profile;
   receiver?: Profile;
+}
+
+// Poll types
+export interface PollOption {
+  id: string;
+  text: string;
+}
+
+export interface PollData {
+  id: string;
+  post_id: string;
+  question: string;
+  options: PollOption[];
+  voteCounts: Record<string, number>; // option_id → count
+  userVote: string | null;            // option_id the current user voted for
+  totalVotes: number;
 }
 
 // Supabase Database type map

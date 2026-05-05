@@ -23,8 +23,7 @@ function bannerBg(color: string | null) {
 const avatarShared = (roleColor: string): React.CSSProperties => ({
   width: 92, height: 92,
   borderRadius: "50%",
-  border: "4px solid var(--card)",
-  background: "var(--card)",
+  background: "transparent",
   overflow: "hidden",
   boxShadow: `0 0 0 2px ${roleColor}40, 0 8px 24px rgba(0,0,0,0.18)`,
   flexShrink: 0,

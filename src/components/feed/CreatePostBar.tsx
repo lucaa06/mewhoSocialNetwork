@@ -1,98 +1,103 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Feather } from "lucide-react";
-import { getAvatarFallback } from "@/lib/utils";
+import { BarChart2, Link2, AtSign, PenLine } from "lucide-react";
 
 interface CreatePostBarProps {
   user: {
     display_name: string;
-    avatar_url: string | null;
-    avatar_emoji?: string | null;
     role: string;
   } | null;
 }
 
-const ROLE_COLOR: Record<string, string> = {
-  startupper: "#FF4A24",
-  researcher: "#6D41FF",
-  user: "#D97706",
-  admin: "#374151",
+const ROLE_META: Record<string, { label: string; color: string }> = {
+  startupper: { label: "Startupper", color: "#FF4A24" },
+  researcher: { label: "Ricercatore", color: "#6D41FF" },
+  user:       { label: "Maker",       color: "#D97706" },
+  admin:      { label: "Admin",        color: "#374151" },
 };
+
+const QUICK_ACTIONS = [
+  { icon: BarChart2, label: "Sondaggio", mode: "poll"    },
+  { icon: Link2,     label: "Link",      mode: "link"    },
+  { icon: AtSign,    label: "Menzione",  mode: "mention" },
+] as const;
 
 export function CreatePostBar({ user }: CreatePostBarProps) {
   const router = useRouter();
   if (!user) return null;
 
-  const color = ROLE_COLOR[user.role] ?? "#D97706";
+  const meta = ROLE_META[user.role] ?? ROLE_META.user;
 
   return (
     <div
-      className="sticky z-40 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2"
+      className="sticky z-40 -mx-1.5 sm:-mx-5 lg:-mx-8 px-1.5 sm:px-5 lg:px-8 py-2"
       style={{ top: 56, background: "var(--bg)" }}
     >
       <div
         className="rounded-2xl overflow-hidden"
         style={{
           background: "var(--card)",
-          border: "1.5px solid var(--accent)",
-          boxShadow: "0 4px 20px rgba(255,74,36,0.10)",
+          border: "1.5px solid var(--border)",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
         }}
       >
-        {/* Top gradient stripe */}
-        <div
-          className="h-1"
-          style={{ background: "linear-gradient(90deg,#FF4A24,#C84FD0,#6D41FF)" }}
-        />
+        {/* Accent bar */}
+        <div className="h-[3px]" style={{ background: `linear-gradient(90deg,${meta.color},#C84FD0,#6D41FF)` }} />
 
-        <div className="flex items-center gap-3 px-4 py-3">
-          {/* Avatar */}
-          <div
-            className="w-9 h-9 squircle flex items-center justify-center shrink-0 overflow-hidden"
-            style={{ background: `${color}18`, border: `1.5px solid ${color}30` }}
+        {/* Main row */}
+        <div className="flex items-center gap-2.5 px-3.5 pt-3 pb-2">
+          {/* Role badge */}
+          <span
+            className="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: `${meta.color}15`, color: meta.color, border: `1px solid ${meta.color}30` }}
           >
-            {user.avatar_emoji ? (
-              <span style={{ fontSize: 18 }}>{user.avatar_emoji}</span>
-            ) : user.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-sm font-bold" style={{ color }}>
-                {getAvatarFallback(user.display_name)}
-              </span>
-            )}
-          </div>
+            {meta.label}
+          </span>
 
-          {/* Fake input → click navigates to /create */}
+          {/* Fake input */}
           <button
             onClick={() => router.push("/create")}
-            className="flex-1 text-left px-4 py-2 rounded-xl transition-colors"
+            className="flex-1 text-left px-3 py-2 rounded-xl text-sm transition-colors"
             style={{
               background: "var(--surface)",
               border: "1px solid var(--border)",
               color: "var(--subtle)",
-              fontSize: 14,
-              fontFamily: "var(--fh)",
             }}
           >
-            Condividi un&apos;idea, progetto o domanda...
+            Cosa vuoi condividere?
           </button>
 
           {/* Post button */}
           <button
             onClick={() => router.push("/create")}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white shrink-0 transition-all"
-            style={{
-              background: "#FF4A24",
-              boxShadow: "0 2px 10px rgba(255,74,36,0.30)",
-            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-bold text-white shrink-0"
+            style={{ background: meta.color }}
           >
-            <Feather className="w-3.5 h-3.5" />
+            <PenLine className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Posta</span>
           </button>
+        </div>
+
+        {/* Quick-action chips */}
+        <div className="flex items-center gap-2 px-3.5 pb-3 pt-0.5">
+          {QUICK_ACTIONS.map(({ icon: Icon, label, mode }) => (
+            <button
+              key={mode}
+              onClick={() => router.push(`/create?mode=${mode}`)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: "var(--surface)",
+                color: "var(--muted)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {label}
+            </button>
+          ))}
         </div>
       </div>
     </div>
   );
 }
-
