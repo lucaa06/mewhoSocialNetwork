@@ -41,9 +41,9 @@ export function AdminMobileNav({ displayName }: { displayName: string }) {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-black text-sm">
-                    me<span style={{ color: "#FF4A24", fontStyle: "italic" }}>&amp;</span>who
+                    me<span style={{ color: "#FB7141", fontStyle: "italic" }}>&amp;</span>who
                   </span>
-                  <span className="text-[9px] border border-[#FF4A24]/30 text-[#FF4A24] px-1.5 py-0.5 rounded uppercase tracking-widest">admin</span>
+                  <span className="text-[9px] border border-[#FB7141]/30 text-[#FB7141] px-1.5 py-0.5 rounded uppercase tracking-widest">admin</span>
                 </div>
                 <p className="text-[11px] text-black/35 mt-1 truncate">{displayName}</p>
               </div>

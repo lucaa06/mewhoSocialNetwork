@@ -19,7 +19,7 @@ interface Suggestion {
 }
 
 const ROLE_COLOR: Record<string, string> = {
-  startupper: "#FF4A24",
+  startupper: "#FB7141",
   researcher: "#6D41FF",
   user: "#D97706",
   admin: "#374151",

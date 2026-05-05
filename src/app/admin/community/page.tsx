@@ -48,7 +48,7 @@ export default async function AdminCommunityPage() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-black/5">
               <p className="text-sm font-semibold text-black">Richieste in attesa</p>
               {pending.length > 0 && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FF4A24] text-white">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FB7141] text-white">
                   {pending.length}
                 </span>
               )}

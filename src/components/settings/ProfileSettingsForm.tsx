@@ -14,13 +14,13 @@ import { AvatarBuilder } from "@/components/profile/AvatarBuilder";
 
 const ROLES = [
   { value: "user",       label: "Maker",       sublabel: "Qui per esplorare e fare", icon: User,         color: "#D97706", bg: "rgba(217,119,6,0.08)"  },
-  { value: "startupper", label: "Startupper",  sublabel: "Sto costruendo qualcosa",  icon: Rocket,       color: "#FF4A24", bg: "rgba(255,74,36,0.08)"  },
+  { value: "startupper", label: "Startupper",  sublabel: "Sto costruendo qualcosa",  icon: Rocket,       color: "#FB7141", bg: "rgba(251,113,65,0.08)"  },
   { value: "researcher", label: "Ricercatore", sublabel: "Ricerca e innovazione",    icon: FlaskConical, color: "#6D41FF", bg: "rgba(109,65,255,0.08)" },
 ] as const;
 
 const BANNER_PRESETS = [
-  { label: "Brand",      value: null,      preview: "linear-gradient(135deg,#FF4A24,#6D41FF)" },
-  { label: "Corallo",    value: "#FF4A24", preview: "#FF4A24" },
+  { label: "Brand",      value: null,      preview: "linear-gradient(135deg,#FB7141,#1E386C)" },
+  { label: "Corallo",    value: "#FB7141", preview: "#FB7141" },
   { label: "Viola",      value: "#6D41FF", preview: "#6D41FF" },
   { label: "Mezzanotte", value: "#0f0c1a", preview: "#0f0c1a" },
   { label: "Oceano",     value: "#0a1628", preview: "#0a1628" },
@@ -93,10 +93,10 @@ export function ProfileSettingsForm({ profile }: { profile: Profile | null }) {
         <div style={{
           background: "white", borderRadius: "28%", width: 90, height: 90,
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 20px 60px rgba(255,74,36,0.30)",
+          boxShadow: "0 20px 60px rgba(251,113,65,0.30)",
           animation: "popIn 0.3s cubic-bezier(.34,1.56,.64,1)",
         }}>
-          <CheckCircle style={{ width: 48, height: 48, color: "#FF4A24" }} />
+          <CheckCircle style={{ width: 48, height: 48, color: "#FB7141" }} />
         </div>
         <style>{`
           @keyframes popIn { 0%{transform:scale(0) rotate(-15deg);opacity:0} 100%{transform:scale(1) rotate(0);opacity:1} }
@@ -153,7 +153,7 @@ export function ProfileSettingsForm({ profile }: { profile: Profile | null }) {
       <div>
         <p className="label-xs mb-3">Colore banner</p>
         <div className="w-full h-14 rounded-2xl mb-3" style={{
-          background: banner ?? "linear-gradient(135deg,#FF4A24 0%,#C84FD0 50%,#6D41FF 100%)",
+          background: banner ?? "linear-gradient(135deg,#FB7141,#1E386C)",
         }} />
         <div className="flex flex-wrap gap-2">
           {BANNER_PRESETS.map(({ label, value, preview }) => {
@@ -179,7 +179,7 @@ export function ProfileSettingsForm({ profile }: { profile: Profile | null }) {
           <span className="text-xs" style={{ color: "var(--muted)" }}>Colore libero</span>
           <div className="flex items-center gap-2 ml-auto">
             <input type="color"
-              value={banner && !banner.startsWith("linear") ? banner : "#FF4A24"}
+              value={banner && !banner.startsWith("linear") ? banner : "#FB7141"}
               onChange={e => setBanner(e.target.value)}
               className="w-8 h-8 rounded-lg cursor-pointer"
               style={{ border: "1px solid var(--border)", padding: 2, background: "none" }} />

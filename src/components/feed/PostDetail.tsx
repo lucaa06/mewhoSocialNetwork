@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition, useEffect, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
 import type { Post, Comment, PollData } from "@/types/database";
 import { formatDate, getAvatarFallback } from "@/lib/utils";
 import { CornerDownRight, ExternalLink, Flag, Heart, Link as LinkIcon, Send, X } from "lucide-react";
@@ -103,7 +104,7 @@ function PollWidget({ data, currentUserId }: PollWidgetProps) {
                   className="absolute inset-0 rounded-xl transition-all duration-500"
                   style={{
                     width: `${pct}%`,
-                    background: isChosen ? "rgba(255,74,36,0.12)" : "var(--surface)",
+                    background: isChosen ? "rgba(251,113,65,0.12)" : "var(--surface)",
                   }}
                 />
                 <div className="relative flex items-center justify-between gap-2">
@@ -161,6 +162,48 @@ export function PostDetail({
   const [commentText, setCommentText] = useState("");
   const [replyTarget, setReplyTarget] = useState<{ commentId: string; username: string } | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const [mentionSuggestions, setMentionSuggestions] = useState<Array<{ id: string; username: string; display_name: string; avatar_url: string | null }>>([]);
+  const [mentionCursorPos, setMentionCursorPos] = useState(0);
+  const supabase = createClient();
+
+  const detectMention = useCallback((text: string, cursorPos: number) => {
+    const before = text.slice(0, cursorPos);
+    const match = before.match(/@([a-z0-9_]*)$/i);
+    if (match) {
+      setMentionQuery(match[1].toLowerCase());
+      setMentionCursorPos(cursorPos);
+      return;
+    }
+    setMentionQuery(null);
+    setMentionSuggestions([]);
+  }, []);
+
+  useEffect(() => {
+    if (mentionQuery === null) { setMentionSuggestions([]); return; }
+    let cancelled = false;
+    const q = supabase.from("profiles").select("id, username, display_name, avatar_url").order("username", { ascending: true }).limit(3);
+    const filtered = mentionQuery.length > 0 ? q.or(`username.ilike.${mentionQuery}%,display_name.ilike.${mentionQuery}%`) : q;
+    filtered.then(({ data }) => { if (!cancelled && data) setMentionSuggestions(data as typeof mentionSuggestions); });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mentionQuery]);
+
+  function selectMention(suggestion: { username: string }) {
+    if (!textareaRef.current) return;
+    const before = commentText.slice(0, mentionCursorPos);
+    const after = commentText.slice(mentionCursorPos);
+    const replaced = before.replace(/@([a-z0-9_]*)$/i, `@${suggestion.username} `);
+    setCommentText(replaced + after);
+    setMentionQuery(null);
+    setMentionSuggestions([]);
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.setSelectionRange(replaced.length, replaced.length);
+      }
+    }, 0);
+  }
 
   function handleLike() {
     if (!liked) celebrate();
@@ -477,21 +520,52 @@ export function PostDetail({
               onSubmit={handleComment}
               className="flex items-end gap-3 px-5 py-4"
             >
-              <textarea
-                ref={textareaRef}
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleComment(e as unknown as React.FormEvent);
-                  }
-                }}
-                placeholder={replyTarget ? `Rispondi a @${replyTarget.username}...` : "Scrivi un commento..."}
-                rows={1}
-                className="flex-1 resize-none input-base py-2.5 text-sm"
-                style={{ minHeight: 44, background: "var(--surface)" }}
-              />
+              <div className="flex-1 relative">
+                <textarea
+                  ref={textareaRef}
+                  value={commentText}
+                  onChange={(e) => { setCommentText(e.target.value); detectMention(e.target.value, e.target.selectionStart ?? e.target.value.length); }}
+                  onKeyUp={(e) => { const el = e.currentTarget; detectMention(el.value, el.selectionStart ?? el.value.length); }}
+                  onClick={(e) => { const el = e.currentTarget; detectMention(el.value, el.selectionStart ?? el.value.length); }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleComment(e as unknown as React.FormEvent);
+                    }
+                  }}
+                  placeholder={replyTarget ? `Rispondi a @${replyTarget.username}...` : "Scrivi un commento..."}
+                  rows={1}
+                  className="w-full resize-none input-base py-2.5 text-sm"
+                  style={{ minHeight: 44, background: "var(--surface)" }}
+                />
+                {mentionSuggestions.length > 0 && (
+                  <div
+                    className="absolute left-0 right-0 bottom-full mb-1 rounded-xl border shadow-lg z-50 overflow-hidden"
+                    style={{ background: "var(--card)", borderColor: "var(--border)" }}
+                  >
+                    {mentionSuggestions.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); selectMention(s); }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors hover:opacity-80"
+                        style={{ background: "var(--card)" }}
+                      >
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden" style={{ background: "var(--surface)" }}>
+                          {s.avatar_url
+                            // eslint-disable-next-line @next/next/no-img-element
+                            ? <img src={s.avatar_url} alt={s.display_name} className="w-full h-full object-cover" />
+                            : <span style={{ color: "var(--muted)" }}>{s.display_name.slice(0, 2).toUpperCase()}</span>}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold truncate" style={{ color: "var(--fg)" }}>{s.display_name}</p>
+                          <p className="text-xs truncate" style={{ color: "var(--subtle)" }}>@{s.username}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button
                 type="submit"
                 disabled={!commentText.trim() || isPending}

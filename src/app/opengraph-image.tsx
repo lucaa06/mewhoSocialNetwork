@@ -28,7 +28,7 @@ export default function OgImage() {
             justifyContent: "center",
             width: 160,
             height: 160,
-            background: "linear-gradient(135deg, #FF4A24 0%, #6D41FF 100%)",
+            background: "linear-gradient(135deg,#FB7141,#1E386C)",
             borderRadius: 36,
             marginBottom: 44,
             boxShadow: "0 24px 64px rgba(221,65,50,0.35)",
@@ -58,7 +58,7 @@ export default function OgImage() {
           }}
         >
           <span style={{ color: "#0a0a0a" }}>me</span>
-          <span style={{ color: "#FF4A24", fontSize: 96 }}>&amp;</span>
+          <span style={{ color: "#FB7141", fontSize: 96 }}>&amp;</span>
           <span style={{ color: "#0a0a0a" }}>who</span>
         </div>
 
@@ -76,9 +76,9 @@ export default function OgImage() {
           }}
         >
           <span>Connetti</span>
-          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#FF4A24" }} />
+          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#FB7141" }} />
           <span>Collabora</span>
-          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#FF4A24" }} />
+          <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#FB7141" }} />
           <span>Innova</span>
         </div>
       </div>

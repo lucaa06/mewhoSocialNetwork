@@ -10,14 +10,14 @@ import { FollowModal } from "./FollowModal";
 import { MessageButton } from "./MessageButton";
 
 const ROLE: Record<string, { label: string; color: string; bg: string }> = {
-  startupper: { label: "Startupper",  color: "#FF4A24", bg: "rgba(255,74,36,0.12)"  },
+  startupper: { label: "Startupper",  color: "#FB7141", bg: "rgba(251,113,65,0.12)"  },
   researcher: { label: "Ricercatore", color: "#6D41FF", bg: "rgba(109,65,255,0.12)" },
   user:       { label: "Maker",       color: "#D97706", bg: "rgba(217,119,6,0.12)"  },
   admin:      { label: "Admin",       color: "#374151", bg: "rgba(55,65,81,0.12)"   },
 };
 
 function bannerBg(color: string | null) {
-  return color ?? "linear-gradient(135deg,#FF4A24 0%,#C84FD0 50%,#6D41FF 100%)";
+  return color ?? "linear-gradient(135deg,#FB7141,#1E386C)";
 }
 
 const avatarShared = (roleColor: string): React.CSSProperties => ({
@@ -193,8 +193,8 @@ export function ProfileHeader({ profile, followersCount, followingCount, postsCo
                     style={isFollowing
                       ? { border: "1px solid var(--border)", color: "var(--muted)", background: "var(--card)" }
                       : theyFollowMe
-                      ? { background: "#FF4A24", color: "white", boxShadow: "0 2px 12px rgba(255,74,36,0.30)" }
-                      : { background: "#FF4A24", color: "white", boxShadow: "0 2px 12px rgba(255,74,36,0.30)" }
+                      ? { background: "#FB7141", color: "white", boxShadow: "0 2px 12px rgba(251,113,65,0.30)" }
+                      : { background: "#FB7141", color: "white", boxShadow: "0 2px 12px rgba(251,113,65,0.30)" }
                     }
                   >
                     {isFollowing
@@ -231,7 +231,7 @@ export function ProfileHeader({ profile, followersCount, followingCount, postsCo
               {profile.is_beta && (
                 <span
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                  style={{ background: "linear-gradient(135deg,#6D41FF,#C84FD0)", color: "white" }}
+                  style={{ background: "linear-gradient(135deg,#1E386C,#FB7141)", color: "white" }}
                 >
                   <FlaskConical className="w-2.5 h-2.5" />
                   Beta

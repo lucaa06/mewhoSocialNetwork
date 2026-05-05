@@ -47,7 +47,7 @@ export function CommunityJoinButton({
       className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl transition-all disabled:opacity-60 active:scale-95"
       style={member
         ? { border: "1px solid var(--border)", color: "var(--muted)", background: "var(--card)" }
-        : { background: "linear-gradient(135deg,#FF4A24,#C84FD0)", color: "white", boxShadow: "0 2px 12px rgba(255,74,36,0.25)" }
+        : { background: "#FB7141", color: "white", boxShadow: "0 2px 12px rgba(251,113,65,0.25)" }
       }
     >
       {loading ? (

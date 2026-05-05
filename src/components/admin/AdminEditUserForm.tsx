@@ -143,7 +143,7 @@ export function AdminEditUserForm({ profile }: Props) {
             onClick={save}
             disabled={isPending}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50"
-            style={{ background: "#FF4A24" }}
+            style={{ background: "#FB7141" }}
           >
             <Check className="w-3.5 h-3.5" />
             {isPending ? "Salvando..." : "Salva modifiche"}

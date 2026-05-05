@@ -58,8 +58,8 @@ export function MatchDeck() {
           onClick={() => { setLoading(true); setCurrent(0); fetch("/api/connections").then(r => r.json()).then(d => { setProfiles(d.profiles ?? []); setLoading(false); }); }}
           style={{
             padding: "12px 28px", borderRadius: 14, fontSize: 14, fontWeight: 700,
-            background: "#FF4A24", color: "white", border: "none", cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(255,74,36,0.35)",
+            background: "#FB7141", color: "white", border: "none", cursor: "pointer",
+            boxShadow: "0 4px 16px rgba(251,113,65,0.35)",
           }}
         >
           Ricarica

@@ -3,28 +3,66 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Send, Palette, Check, CheckCheck } from "lucide-react";
+import { ArrowLeft, Send, Palette, Check, CheckCheck, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getAvatarFallback } from "@/lib/utils";
 
 interface Profile { id: string; username: string; display_name: string; avatar_url: string | null; role: string; avatar_emoji?: string | null }
 interface Message { id: string; conversation_id: string; sender_id: string; ciphertext: string; iv: string; created_at: string; is_deleted: boolean; text: string }
 
-const THEMES: Record<string, { label: string; swatch: string; bg: string; sentBg: string; receivedBg: string; sentText: string; receivedText: string }> = {
-  default:  { label: "Default",  swatch: "#111111",  bg: "var(--bg)",   sentBg: "#111",      receivedBg: "var(--card)", sentText: "#fff", receivedText: "var(--fg)" },
-  night:    { label: "Notte",    swatch: "#FF4A24",  bg: "#0d0d14",     sentBg: "#FF4A24",   receivedBg: "#1e1e2e",     sentText: "#fff", receivedText: "#e8e8ff" },
-  forest:   { label: "Foresta",  swatch: "#16a34a",  bg: "#0a160a",     sentBg: "#16a34a",   receivedBg: "#111d11",     sentText: "#fff", receivedText: "#d0f0d0" },
-  ocean:    { label: "Oceano",   swatch: "#2563eb",  bg: "#070d1e",     sentBg: "#2563eb",   receivedBg: "#0c1530",     sentText: "#fff", receivedText: "#c8d8ff" },
-  sunset:   { label: "Tramonto", swatch: "#f97316",  bg: "#130a04",     sentBg: "#f97316",   receivedBg: "#1e1108",     sentText: "#fff", receivedText: "#fde8cc" },
-  lavender: { label: "Lavanda",  swatch: "#7c3aed",  bg: "#0e0a1a",     sentBg: "#7c3aed",   receivedBg: "#160f28",     sentText: "#fff", receivedText: "#e0d0ff" },
-  rose:     { label: "Rosa",     swatch: "#e11d48",  bg: "#150509",     sentBg: "#e11d48",   receivedBg: "#200810",     sentText: "#fff", receivedText: "#ffd0da" },
-  mint:     { label: "Menta",    swatch: "#0d9488",  bg: "#041210",     sentBg: "#0d9488",   receivedBg: "#081a18",     sentText: "#fff", receivedText: "#c0f0ec" },
+const THEMES: Record<string, { label: string; swatch: string; sentBg: string; receivedBg: string; sentText: string; receivedText: string }> = {
+  default:  { label: "Default",  swatch: "#1E386C",  sentBg: "#1E386C",   receivedBg: "var(--surface)", sentText: "#fff", receivedText: "var(--fg)" },
+  orange:   { label: "Orange",   swatch: "#FB7141",  sentBg: "#FB7141",   receivedBg: "var(--surface)", sentText: "#fff", receivedText: "var(--fg)" },
+  night:    { label: "Notte",    swatch: "#7c3aed",  sentBg: "#7c3aed",   receivedBg: "var(--surface)", sentText: "#fff", receivedText: "var(--fg)" },
+  forest:   { label: "Foresta",  swatch: "#16a34a",  sentBg: "#16a34a",   receivedBg: "var(--surface)", sentText: "#fff", receivedText: "var(--fg)" },
+  ocean:    { label: "Oceano",   swatch: "#2563eb",  sentBg: "#2563eb",   receivedBg: "var(--surface)", sentText: "#fff", receivedText: "var(--fg)" },
+  rose:     { label: "Rosa",     swatch: "#e11d48",  sentBg: "#e11d48",   receivedBg: "var(--surface)", sentText: "#fff", receivedText: "var(--fg)" },
+  mint:     { label: "Menta",    swatch: "#0d9488",  sentBg: "#0d9488",   receivedBg: "var(--surface)", sentText: "#fff", receivedText: "var(--fg)" },
+  dark:     { label: "Dark",     swatch: "#222",     sentBg: "#333",      receivedBg: "var(--surface)", sentText: "#fff", receivedText: "var(--fg)" },
 };
+
+function parsePostShare(text: string): { postId: string; title: string | null } | null {
+  const withTitle = text.match(/^📎 Post condiviso: (.+?) — https:\/\/mewho\.it\/post\/([\w-]+)$/);
+  if (withTitle) return { title: withTitle[1], postId: withTitle[2] };
+  const urlOnly = text.match(/^📎 Post condiviso: https:\/\/mewho\.it\/post\/([\w-]+)$/);
+  if (urlOnly) return { title: null, postId: urlOnly[1] };
+  return null;
+}
+
+function PostShareCard({ postId, title, isMine }: { postId: string; title: string | null; isMine: boolean }) {
+  return (
+    <a
+      href={`/post/${postId}`}
+      className="flex items-center gap-3 p-3 rounded-2xl transition-opacity hover:opacity-80"
+      style={{
+        background: isMine ? "rgba(255,255,255,0.12)" : "var(--surface)",
+        border: `1px solid ${isMine ? "rgba(255,255,255,0.2)" : "var(--border)"}`,
+        minWidth: 200, maxWidth: 280,
+      }}
+    >
+      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+        style={{ background: isMine ? "rgba(255,255,255,0.15)" : "rgba(251,113,65,0.12)" }}>
+        <ExternalLink className="w-4 h-4" style={{ color: isMine ? "rgba(255,255,255,0.9)" : "#FB7141" }} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-bold uppercase tracking-wide"
+          style={{ color: isMine ? "rgba(255,255,255,0.6)" : "var(--subtle)" }}>Post condiviso</p>
+        {title && (
+          <p className="text-sm font-medium leading-tight truncate mt-0.5"
+            style={{ color: isMine ? "#fff" : "var(--fg)" }}>{title}</p>
+        )}
+        <p className="text-[10px] mt-0.5" style={{ color: isMine ? "rgba(255,255,255,0.5)" : "var(--subtle)" }}>
+          Tocca per aprire
+        </p>
+      </div>
+    </a>
+  );
+}
 
 function RainbowLink({ href, text }: { href: string; text: string }) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer"
-      style={{ background: "linear-gradient(90deg,#FF4A24,#f59e0b,#10b981,#2563eb,#7c3aed)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", textDecoration: "underline" }}>
+      style={{ background: "linear-gradient(90deg,#FB7141,#f59e0b,#10b981,#2563eb,#7c3aed)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", textDecoration: "underline" }}>
       {text}
     </a>
   );
@@ -195,11 +233,11 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
   }
 
   return (
-    <div className="h-full flex flex-col" style={{ background: t.bg }}>
+    <div className="h-full flex flex-col" style={{ background: "var(--bg)" }}>
 
       {/* Header */}
       <div className="shrink-0 flex items-center gap-3 px-3 py-2.5 relative z-10"
-        style={{ background: t.bg, borderBottom: "1px solid var(--border)" }}>
+        style={{ background: "var(--bg)", borderBottom: "1px solid var(--border)" }}>
         <button onClick={() => router.back()}
           className="w-9 h-9 flex items-center justify-center rounded-full transition-colors"
           style={{ color: "var(--muted)" }}
@@ -275,6 +313,9 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
           return (
             <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
               <div className="max-w-[75%]">
+                {parsePostShare(msg.text) ? (
+                  <PostShareCard {...parsePostShare(msg.text)!} isMine={isMine} />
+                ) : (
                 <div className="px-4 py-2.5 rounded-2xl text-sm leading-relaxed"
                   style={{
                     background: isMine ? t.sentBg : t.receivedBg,
@@ -285,6 +326,7 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
                   }}>
                   <CollapsibleText text={msg.text} long={msg.text.length > 300} color={isMine ? t.sentText : t.receivedText} />
                 </div>
+                )}
                 <div className={`flex items-center gap-1 mt-0.5 ${isMine ? "justify-end" : "justify-start"}`}>
                   <span className="text-[10px]" style={{ color: "var(--subtle)" }}>{formatTime(msg.created_at)}</span>
                   {isMine && !isTemp && (
@@ -318,7 +360,7 @@ export function ChatView({ conversationId, currentUserId, otherUser, theme: init
       {/* Input */}
       <form onSubmit={sendMessage}
         className="shrink-0 px-3 py-3 flex gap-2 items-end"
-        style={{ background: t.bg, borderTop: "1px solid var(--border)" }}>
+        style={{ background: "var(--bg)", borderTop: "1px solid var(--border)" }}>
         <input
           ref={inputRef}
           value={input}

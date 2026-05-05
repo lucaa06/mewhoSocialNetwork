@@ -48,7 +48,7 @@ export function AdminUserRestrictions({ userId, current }: {
       <div className="flex items-center justify-between mb-4">
         <p className="text-[11px] font-semibold text-black/35 uppercase tracking-widest">Restrizioni account</p>
         {hasRestrictions && (
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(255,74,36,0.1)", color: "#FF4A24" }}>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(251,113,65,0.1)", color: "#FB7141" }}>
             Attive
           </span>
         )}

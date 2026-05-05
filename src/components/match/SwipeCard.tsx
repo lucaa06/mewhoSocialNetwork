@@ -6,7 +6,7 @@ import { getAvatarFallback } from "@/lib/utils";
 import type { Profile } from "@/types/database";
 
 const ROLE: Record<string, { label: string; color: string; bg: string }> = {
-  startupper: { label: "Startupper",  color: "#FF4A24", bg: "rgba(255,74,36,0.12)"  },
+  startupper: { label: "Startupper",  color: "#FB7141", bg: "rgba(251,113,65,0.12)"  },
   researcher: { label: "Ricercatore", color: "#6D41FF", bg: "rgba(109,65,255,0.12)" },
   user:       { label: "Maker",       color: "#D97706", bg: "rgba(217,119,6,0.12)"  },
   admin:      { label: "Admin",       color: "#374151", bg: "rgba(55,65,81,0.12)"   },
@@ -108,7 +108,7 @@ export function SwipeCard({ profile, onConnect, onSkip, active }: SwipeCardProps
         {/* Banner */}
         <div style={{
           height: 180,
-          background: profile.banner_color ?? "linear-gradient(135deg,#FF4A24 0%,#C84FD0 50%,#6D41FF 100%)",
+          background: profile.banner_color ?? "linear-gradient(135deg,#FB7141,#1E386C)",
           position: "relative",
         }}>
           <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 20% 30%,rgba(255,255,255,0.18) 0%,transparent 55%)" }} />
@@ -149,7 +149,7 @@ export function SwipeCard({ profile, onConnect, onSkip, active }: SwipeCardProps
             </span>
             {profile.is_verified && <BadgeCheck className="w-5 h-5 shrink-0" style={{ color: role.color }} />}
             {profile.is_beta && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: "linear-gradient(135deg,#6D41FF,#C84FD0)", color: "white" }}>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: "linear-gradient(135deg,#1E386C,#FB7141)", color: "white" }}>
                 <FlaskConical className="w-2.5 h-2.5" />Beta
               </span>
             )}
@@ -219,10 +219,10 @@ export function SwipeCard({ profile, onConnect, onSkip, active }: SwipeCardProps
             onClick={() => exit("connect")}
             style={{
               width: 64, height: 64, borderRadius: "28%",
-              background: "linear-gradient(135deg,#FF4A24,#C84FD0)",
+              background: "#FB7141",
               border: "none",
               display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 20px rgba(255,74,36,0.40)",
+              boxShadow: "0 4px 20px rgba(251,113,65,0.40)",
               cursor: "pointer",
             }}
           >

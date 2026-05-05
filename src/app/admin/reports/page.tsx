@@ -38,7 +38,7 @@ export default async function AdminReportsPage({
           <Link key={t.key} href={`/admin/reports?status=${t.key}`}
             className="px-3 py-1.5 rounded-xl text-xs font-medium transition-colors"
             style={status === t.key
-              ? { background: "#FF4A24", color: "white" }
+              ? { background: "#FB7141", color: "white" }
               : { background: "rgba(0,0,0,0.05)", color: "rgba(0,0,0,0.4)" }
             }
           >

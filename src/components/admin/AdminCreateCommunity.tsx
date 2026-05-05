@@ -7,7 +7,7 @@ import { celebrate } from "@/lib/celebrate";
 import { Rocket, FlaskConical, Palette, Code2, Globe, Sparkles } from "lucide-react";
 
 const CATEGORIES = [
-  { value: "startup",  label: "Startup",    icon: Rocket,       color: "#FF4A24" },
+  { value: "startup",  label: "Startup",    icon: Rocket,       color: "#FB7141" },
   { value: "research", label: "Ricerca",    icon: FlaskConical, color: "#6D41FF" },
   { value: "creative", label: "Creatività", icon: Palette,      color: "#C84FD0" },
   { value: "tech",     label: "Tech",       icon: Code2,        color: "#0EA5E9" },
@@ -95,12 +95,12 @@ export function AdminCreateCommunity() {
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={form.is_public} onChange={e => setForm(f => ({ ...f, is_public: e.target.checked }))}
-            className="w-4 h-4 rounded accent-[#FF4A24]" />
+            className="w-4 h-4 rounded accent-[#FB7141]" />
           <span className="text-sm text-black/50">Pubblica</span>
         </label>
         <button type="submit" disabled={isPending || !form.name.trim() || !form.category}
           className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-40"
-          style={{ background: "#FF4A24" }}>
+          style={{ background: "#FB7141" }}>
           {isPending ? "Creando..." : "Crea community"}
         </button>
       </div>

@@ -40,8 +40,8 @@ function NotificationItem({ n }: { n: Notification }) {
     );
     href = `/u/${actorUser}`;
     Icon = UserPlus;
-    iconBg = "rgba(255,74,36,0.12)";
-    iconColor = "#FF4A24";
+    iconBg = "rgba(251,113,65,0.12)";
+    iconColor = "#FB7141";
   } else if (n.type === "new_post") {
     const communityName = p.community_name as string | null;
     const postTitle = p.post_title as string | null;
@@ -102,8 +102,8 @@ function NotificationItem({ n }: { n: Notification }) {
     );
     href = p.post_id ? `/post/${p.post_id}` : "/";
     Icon = AtSign;
-    iconBg = "rgba(255,74,36,0.12)";
-    iconColor = "#FF4A24";
+    iconBg = "rgba(251,113,65,0.12)";
+    iconColor = "#FB7141";
   } else {
     text = n.type;
   }
@@ -114,7 +114,7 @@ function NotificationItem({ n }: { n: Notification }) {
       className="flex items-start gap-3 p-4 rounded-2xl transition-all hover:scale-[1.005] active:scale-[.99]"
       style={{
         background: n.is_read ? "var(--card)" : "var(--accent-soft)",
-        border: `1px solid ${n.is_read ? "var(--border)" : "rgba(255,74,36,0.18)"}`,
+        border: `1px solid ${n.is_read ? "var(--border)" : "rgba(251,113,65,0.18)"}`,
       }}
     >
       {/* Actor avatar */}
@@ -155,7 +155,7 @@ function NotificationItem({ n }: { n: Notification }) {
 
       {/* Unread dot */}
       {!n.is_read && (
-        <div className="w-2 h-2 rounded-full shrink-0 mt-1.5" style={{ background: "#FF4A24" }} />
+        <div className="w-2 h-2 rounded-full shrink-0 mt-1.5" style={{ background: "#FB7141" }} />
       )}
     </Link>
   );

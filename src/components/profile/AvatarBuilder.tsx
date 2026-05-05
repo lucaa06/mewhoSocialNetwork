@@ -22,7 +22,7 @@ interface AvatarCfg {
 
 // ─── option tables ────────────────────────────────────────────────────────────
 const BG = [
-  "#FF4A24","#1E3A5F","#6D41FF","#16A34A",
+  "#FB7141","#1E3A5F","#6D41FF","#16A34A",
   "#D97706","#C84FD0","#0EA5E9","#0f0c1a",
 ];
 
@@ -51,7 +51,7 @@ const HAIR_COLOR = [
 
 const CLOTHES_COLOR = [
   { hex:"262e33", label:"Carbone"  },
-  { hex:"FF4A24", label:"Corallo"  },
+  { hex:"FB7141", label:"Corallo"  },
   { hex:"65c9ff", label:"Azzurro"  },
   { hex:"25557c", label:"Navy"     },
   { hex:"a7ffc4", label:"Menta"    },
@@ -159,7 +159,7 @@ const TABS = ["Capelli","Viso","Occhi","Bocca","Vestiti","Extra","Sfondo"] as co
 type Tab = typeof TABS[number];
 
 const DEFAULT_CFG: AvatarCfg = {
-  bg:           "FF4A24",
+  bg:           "FB7141",
   skinColor:    "edb98a",
   top:          "shortFlat",
   hairColor:    "2c1b18",

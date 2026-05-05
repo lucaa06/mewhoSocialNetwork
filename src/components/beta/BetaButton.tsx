@@ -8,7 +8,7 @@ import { toast } from "sonner";
 const PRIORITIES = [
   { value: "low",      label: "Bassa",     color: "#D97706" },
   { value: "normal",   label: "Normale",   color: "#6D41FF" },
-  { value: "high",     label: "Alta",      color: "#FF4A24" },
+  { value: "high",     label: "Alta",      color: "#FB7141" },
   { value: "critical", label: "Critica",   color: "#DC2626" },
 ] as const;
 
@@ -44,7 +44,7 @@ export function BetaButton({ userId }: { userId: string }) {
       <button
         onClick={() => setOpen(v => !v)}
         className="fixed bottom-24 right-4 z-40 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-white shadow-lg transition-all hover:scale-105"
-        style={{ background: "linear-gradient(135deg,#6D41FF,#C84FD0)" }}
+        style={{ background: "linear-gradient(135deg,#1E386C,#FB7141)" }}
       >
         <FlaskConical className="w-3.5 h-3.5" />
         Beta
@@ -65,7 +65,7 @@ export function BetaButton({ userId }: { userId: string }) {
             {/* Header */}
             <div
               className="px-4 py-3 flex items-center justify-between"
-              style={{ background: "linear-gradient(135deg,#6D41FF,#C84FD0)", color: "white" }}
+              style={{ background: "linear-gradient(135deg,#1E386C,#FB7141)", color: "white" }}
             >
               <div className="flex items-center gap-2">
                 <FlaskConical className="w-4 h-4" />
@@ -118,7 +118,7 @@ export function BetaButton({ userId }: { userId: string }) {
                 type="submit"
                 disabled={!message.trim() || sending}
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40"
-                style={{ background: "linear-gradient(135deg,#6D41FF,#C84FD0)" }}
+                style={{ background: "linear-gradient(135deg,#1E386C,#FB7141)" }}
               >
                 <Send className="w-3.5 h-3.5" />
                 {sending ? "Invio..." : "Invia feedback"}

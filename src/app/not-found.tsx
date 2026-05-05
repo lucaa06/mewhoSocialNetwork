@@ -80,16 +80,16 @@ export default function NotFound() {
           opacity: 0;
         }
 
-        .particle-1  { width:10px; height:10px; left:8%;   background:#FF4A24; animation-duration:7s;  animation-delay:0s;    }
+        .particle-1  { width:10px; height:10px; left:8%;   background:#FB7141; animation-duration:7s;  animation-delay:0s;    }
         .particle-2  { width:6px;  height:6px;  left:15%;  background:#6D41FF; animation-duration:9s;  animation-delay:1.2s;  }
         .particle-3  { width:14px; height:14px; left:25%;  background:#C84FD0; animation-duration:8s;  animation-delay:0.5s;  }
         .particle-4  { width:8px;  height:8px;  left:38%;  background:#FF7252; animation-duration:11s; animation-delay:2s;    }
-        .particle-5  { width:12px; height:12px; left:50%;  background:#FF4A24; animation-duration:6s;  animation-delay:0.8s;  }
+        .particle-5  { width:12px; height:12px; left:50%;  background:#FB7141; animation-duration:6s;  animation-delay:0.8s;  }
         .particle-6  { width:7px;  height:7px;  left:62%;  background:#6D41FF; animation-duration:10s; animation-delay:3s;    }
         .particle-7  { width:16px; height:16px; left:72%;  background:#C84FD0; animation-duration:8.5s;animation-delay:1.5s;  }
-        .particle-8  { width:9px;  height:9px;  left:83%;  background:#FF4A24; animation-duration:7.5s;animation-delay:0.3s;  }
+        .particle-8  { width:9px;  height:9px;  left:83%;  background:#FB7141; animation-duration:7.5s;animation-delay:0.3s;  }
         .particle-9  { width:5px;  height:5px;  left:91%;  background:#6D41FF; animation-duration:9.5s;animation-delay:2.5s;  }
-        .particle-10 { width:11px; height:11px; left:20%;  background:#FF4A24; animation-duration:12s; animation-delay:4s;    }
+        .particle-10 { width:11px; height:11px; left:20%;  background:#FB7141; animation-duration:12s; animation-delay:4s;    }
         .particle-11 { width:8px;  height:8px;  left:55%;  background:#C84FD0; animation-duration:7.2s;animation-delay:1.8s;  }
         .particle-12 { width:13px; height:13px; left:78%;  background:#6D41FF; animation-duration:10.5s;animation-delay:0.9s; }
 
@@ -115,7 +115,7 @@ export default function NotFound() {
         .logo-wrap {
           animation: floatBob 3s ease-in-out infinite;
           margin-bottom: 28px;
-          filter: drop-shadow(0 8px 24px rgba(255,74,36,0.25));
+          filter: drop-shadow(0 8px 24px rgba(251,113,65,0.25));
         }
 
         @keyframes floatBob {
@@ -129,7 +129,7 @@ export default function NotFound() {
           letter-spacing: -0.04em;
           line-height: 1;
           margin: 0 0 8px;
-          background: linear-gradient(135deg, #FF4A24 0%, #C84FD0 50%, #6D41FF 100%);
+          background: linear-gradient(135deg, #FB7141 0%, #C84FD0 50%, #6D41FF 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -138,7 +138,7 @@ export default function NotFound() {
         }
 
         @keyframes opsGlow {
-          0%, 100% { filter: drop-shadow(0 0 20px rgba(255,74,36,0.30)); }
+          0%, 100% { filter: drop-shadow(0 0 20px rgba(251,113,65,0.30)); }
           50%       { filter: drop-shadow(0 0 40px rgba(109,65,255,0.40)); }
         }
 
@@ -150,16 +150,16 @@ export default function NotFound() {
           font-weight: 700;
           letter-spacing: 0.12em;
           color: white;
-          background: linear-gradient(135deg, #FF4A24, #6D41FF);
+          background: linear-gradient(135deg, #FB7141, #6D41FF);
           padding: 4px 14px;
           border-radius: 99px;
           margin-bottom: 24px;
-          box-shadow: 0 4px 16px rgba(255,74,36,0.30);
+          box-shadow: 0 4px 16px rgba(251,113,65,0.30);
           animation: pulseBadge 2s ease-in-out infinite;
         }
 
         @keyframes pulseBadge {
-          0%, 100% { transform: scale(1);    box-shadow: 0 4px 16px rgba(255,74,36,0.30); }
+          0%, 100% { transform: scale(1);    box-shadow: 0 4px 16px rgba(251,113,65,0.30); }
           50%       { transform: scale(1.06); box-shadow: 0 6px 24px rgba(109,65,255,0.40); }
         }
 
@@ -188,15 +188,15 @@ export default function NotFound() {
           font-size: 15px;
           font-weight: 700;
           color: white;
-          background: linear-gradient(135deg, #FF4A24 0%, #C84FD0 60%, #6D41FF 100%);
+          background: linear-gradient(135deg, #FB7141 0%, #C84FD0 60%, #6D41FF 100%);
           text-decoration: none;
-          box-shadow: 0 6px 24px rgba(255,74,36,0.35);
+          box-shadow: 0 6px 24px rgba(251,113,65,0.35);
           transition: transform 0.18s ease, box-shadow 0.18s ease;
           font-family: var(--fh, "Outfit", system-ui, sans-serif);
         }
         .btn-home:hover {
           transform: translateY(-2px);
-          box-shadow: 0 10px 32px rgba(255,74,36,0.45);
+          box-shadow: 0 10px 32px rgba(251,113,65,0.45);
         }
         .btn-home:active { transform: scale(0.97); }
 
@@ -217,8 +217,8 @@ export default function NotFound() {
         }
         .btn-back:hover {
           background: #FFF1ED;
-          border-color: #FF4A24;
-          color: #FF4A24;
+          border-color: #FB7141;
+          color: #FB7141;
         }
 
         /* ── Waves ───────────────────────────────────────────── */
@@ -262,7 +262,7 @@ export default function NotFound() {
           .not-found-root { background: #0f0c0a; }
           .message { color: rgba(242,234,229,0.50); }
           .btn-back { border-color: rgba(255,255,255,0.10); color: rgba(242,234,229,0.50); }
-          .btn-back:hover { background: rgba(255,74,36,0.12); border-color: #FF4A24; color: #FF4A24; }
+          .btn-back:hover { background: rgba(251,113,65,0.12); border-color: #FB7141; color: #FB7141; }
         }
       `}</style>
     </div>

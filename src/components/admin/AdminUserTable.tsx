@@ -13,7 +13,7 @@ type AdminUserRow = Pick<
 
 const ROLE_STYLE: Record<string, { bg: string; color: string; label: string }> = {
   admin:      { bg: "rgba(55,65,81,0.1)",   color: "#374151", label: "Admin" },
-  startupper: { bg: "rgba(255,74,36,0.1)",  color: "#FF4A24", label: "Startupper" },
+  startupper: { bg: "rgba(251,113,65,0.1)",  color: "#FB7141", label: "Startupper" },
   researcher: { bg: "rgba(109,65,255,0.1)", color: "#6D41FF", label: "Ricercatore" },
   user:       { bg: "rgba(217,119,6,0.1)",  color: "#D97706", label: "Maker" },
 };
@@ -71,7 +71,7 @@ export function AdminUserTable({ users }: { users: AdminUserRow[] }) {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-1">
                     <span className="font-medium text-black">{user.display_name}</span>
-                    {user.is_verified && <BadgeCheck className="w-3.5 h-3.5 shrink-0" style={{ color: "#FF4A24" }} />}
+                    {user.is_verified && <BadgeCheck className="w-3.5 h-3.5 shrink-0" style={{ color: "#FB7141" }} />}
                   </div>
                   <span className="text-xs text-black/30">@{user.username}</span>
                 </td>
@@ -100,7 +100,7 @@ export function AdminUserTable({ users }: { users: AdminUserRow[] }) {
                 <td className="px-4 py-3">
                   <Link href={`/admin/users/${user.id}`}
                     className="text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-colors"
-                    style={{ background: "rgba(221,65,50,0.08)", color: "#FF4A24" }}
+                    style={{ background: "rgba(221,65,50,0.08)", color: "#FB7141" }}
                   >
                     Gestisci →
                   </Link>

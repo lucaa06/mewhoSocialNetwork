@@ -58,11 +58,11 @@ export function MatchModal({ profile, onClose }: MatchModalProps) {
         <div style={{ display: "flex", justifyContent: "center", gap: -20, marginBottom: 24 }}>
           <div style={{
             width: 72, height: 72, borderRadius: "28%",
-            border: "3px solid #FF4A24",
+            border: "3px solid #FB7141",
             background: "var(--surface)",
             display: "flex", alignItems: "center", justifyContent: "center",
             overflow: "hidden",
-            boxShadow: "0 4px 20px rgba(255,74,36,0.3)",
+            boxShadow: "0 4px 20px rgba(251,113,65,0.3)",
             zIndex: 2,
           }}>
             {profile.avatar_emoji
@@ -70,7 +70,7 @@ export function MatchModal({ profile, onClose }: MatchModalProps) {
               : profile.avatar_url
               // eslint-disable-next-line @next/next/no-img-element
               ? <img src={profile.avatar_url} alt={profile.display_name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <span style={{ fontSize: 24, fontWeight: 800, color: "#FF4A24" }}>{getAvatarFallback(profile.display_name)}</span>
+              : <span style={{ fontSize: 24, fontWeight: 800, color: "#FB7141" }}>{getAvatarFallback(profile.display_name)}</span>
             }
           </div>
         </div>
@@ -91,9 +91,9 @@ export function MatchModal({ profile, onClose }: MatchModalProps) {
             onClick={onClose}
             style={{
               flex: 1, padding: "12px 0", borderRadius: 14, fontSize: 14, fontWeight: 700,
-              background: "linear-gradient(135deg,#FF4A24,#C84FD0)",
+              background: "#FB7141",
               color: "white", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(255,74,36,0.35)",
+              boxShadow: "0 4px 16px rgba(251,113,65,0.35)",
             }}
           >
             Messaggi 💬

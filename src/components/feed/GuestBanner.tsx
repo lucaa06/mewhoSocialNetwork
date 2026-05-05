@@ -6,8 +6,8 @@ export function GuestBanner() {
     <div
       className="rounded-2xl px-5 py-4 flex items-center gap-4"
       style={{
-        background: "linear-gradient(135deg,rgba(255,74,36,0.07) 0%,rgba(109,65,255,0.07) 100%)",
-        border: "1px solid rgba(255,74,36,0.15)",
+        background: "linear-gradient(135deg,rgba(251,113,65,0.07) 0%,rgba(109,65,255,0.07) 100%)",
+        border: "1px solid rgba(251,113,65,0.15)",
       }}
     >
       <LogoIcon size={36} />
@@ -30,7 +30,7 @@ export function GuestBanner() {
         <Link
           href="/register"
           className="text-sm font-semibold px-3 py-1.5 rounded-xl text-white transition-all"
-          style={{ background: "#FF4A24", boxShadow: "0 2px 10px rgba(255,74,36,0.30)" }}
+          style={{ background: "#FB7141", boxShadow: "0 2px 10px rgba(251,113,65,0.30)" }}
         >
           Registrati
         </Link>

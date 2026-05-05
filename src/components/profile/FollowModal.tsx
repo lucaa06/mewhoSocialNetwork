@@ -11,7 +11,7 @@ interface FollowUser {
 }
 
 const ROLE_COLOR: Record<string, string> = {
-  startupper: "#FF4A24", researcher: "#6D41FF", user: "#D97706", admin: "#374151",
+  startupper: "#FB7141", researcher: "#6D41FF", user: "#D97706", admin: "#374151",
 };
 
 export function FollowModal({ userId, currentUserId, type, onClose }: {
@@ -117,7 +117,7 @@ export function FollowModal({ userId, currentUserId, type, onClose }: {
         <div className="overflow-y-auto flex-1">
           {loading ? (
             <div className="flex justify-center items-center py-16">
-              <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: "var(--border)", borderTopColor: "#FF4A24" }} />
+              <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: "var(--border)", borderTopColor: "#FB7141" }} />
             </div>
           ) : users.length === 0 ? (
             <p className="text-center py-16 text-sm" style={{ color: "var(--muted)" }}>
@@ -162,7 +162,7 @@ export function FollowModal({ userId, currentUserId, type, onClose }: {
                           className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all"
                           style={following
                             ? { border: "1px solid var(--border)", color: "var(--muted)", background: "transparent" }
-                            : { background: "#FF4A24", color: "white", border: "none", boxShadow: "0 2px 8px rgba(255,74,36,0.25)" }
+                            : { background: "#FB7141", color: "white", border: "none", boxShadow: "0 2px 8px rgba(251,113,65,0.25)" }
                           }
                         >
                           {following

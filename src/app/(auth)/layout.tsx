@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {children}
         </div>
         <p className="text-center text-xs mt-6" style={{ color: "var(--subtle)" }}>
-          &copy; {new Date().getFullYear()} me<span style={{ color: "#FF4A24", fontStyle: "italic", fontFamily: "var(--fa)" }}>&amp;</span>who
+          &copy; {new Date().getFullYear()} me<span style={{ color: "#FB7141", fontStyle: "italic", fontFamily: "var(--fa)" }}>&amp;</span>who
         </p>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 
 const CATEGORIES: { value: string; label: string; icon: LucideIcon; color: string; bg: string }[] = [
-  { value: "startup",  label: "Startup",    icon: Rocket,       color: "#FF4A24", bg: "rgba(255,74,36,0.15)"  },
+  { value: "startup",  label: "Startup",    icon: Rocket,       color: "#FB7141", bg: "rgba(251,113,65,0.15)"  },
   { value: "research", label: "Ricerca",    icon: FlaskConical, color: "#6D41FF", bg: "rgba(109,65,255,0.15)" },
   { value: "creative", label: "Creatività", icon: Palette,      color: "#C84FD0", bg: "rgba(200,79,208,0.15)" },
   { value: "tech",     label: "Tech",       icon: Code2,        color: "#0EA5E9", bg: "rgba(14,165,233,0.15)" },
@@ -92,7 +92,7 @@ export function CommunityHeader({ communityId, name, description, category, avat
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl overflow-hidden"
             style={{
-              background: displayEmoji ? "var(--surface)" : (cat?.bg ?? "linear-gradient(135deg,#FF4A24,#6D41FF)"),
+              background: displayEmoji ? "var(--surface)" : (cat?.bg ?? "linear-gradient(135deg,#FB7141,#1E386C)"),
               border: "2px solid var(--border)",
             }}
           >

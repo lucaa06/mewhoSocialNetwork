@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Admin — Beta Feedback" };
 const PRIORITY_STYLE: Record<string, { bg: string; color: string }> = {
   low:      { bg: "rgba(217,119,6,0.1)",  color: "#D97706" },
   normal:   { bg: "rgba(109,65,255,0.1)", color: "#6D41FF" },
-  high:     { bg: "rgba(255,74,36,0.1)",  color: "#FF4A24" },
+  high:     { bg: "rgba(251,113,65,0.1)",  color: "#FB7141" },
   critical: { bg: "rgba(220,38,38,0.1)",  color: "#DC2626" },
 };
 

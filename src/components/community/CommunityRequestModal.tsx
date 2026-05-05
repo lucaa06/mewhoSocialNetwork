@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { submitCommunityRequest } from "@/app/actions/community";
 
 const CATEGORIES = [
-  { value: "startup",  label: "Startup",   sublabel: "Imprenditoria",  icon: Rocket,        color: "#FF4A24", bg: "rgba(255,74,36,0.10)"   },
+  { value: "startup",  label: "Startup",   sublabel: "Imprenditoria",  icon: Rocket,        color: "#FB7141", bg: "rgba(251,113,65,0.10)"   },
   { value: "research", label: "Ricerca",   sublabel: "Innovazione",    icon: FlaskConical,  color: "#6D41FF", bg: "rgba(109,65,255,0.10)"  },
   { value: "creative", label: "Creatività",sublabel: "Design & Arte",  icon: Palette,       color: "#C84FD0", bg: "rgba(200,79,208,0.10)"  },
   { value: "tech",     label: "Tech",      sublabel: "Sviluppo",       icon: Code2,         color: "#0EA5E9", bg: "rgba(14,165,233,0.10)"  },
@@ -22,7 +22,7 @@ export function CommunityRequestButton() {
       <button
         onClick={() => setOpen(true)}
         className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-white transition-all"
-        style={{ background: "linear-gradient(135deg,#FF4A24,#C84FD0)", boxShadow: "0 4px 16px rgba(255,74,36,0.30)" }}
+        style={{ background: "#FB7141", boxShadow: "0 4px 16px rgba(251,113,65,0.30)" }}
       >
         <Users2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
         <span className="hidden sm:inline">Richiedi una community</span>
@@ -163,8 +163,8 @@ function CommunityRequestModal({ onClose }: { onClose: () => void }) {
             disabled={loading}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold text-white transition-all"
             style={{
-              background: loading ? "#ccc" : "linear-gradient(135deg,#FF4A24,#C84FD0)",
-              boxShadow: loading ? "none" : "0 4px 16px rgba(255,74,36,0.30)",
+              background: loading ? "#ccc" : "#FB7141",
+              boxShadow: loading ? "none" : "0 4px 16px rgba(251,113,65,0.30)",
             }}
           >
             <Send className="w-4 h-4" />

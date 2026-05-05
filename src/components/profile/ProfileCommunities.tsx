@@ -3,7 +3,7 @@ import { Rocket, FlaskConical, Palette, Code2, Globe, Sparkles, Users2 } from "l
 import type { LucideIcon } from "lucide-react";
 
 const CATEGORY_ICONS: Record<string, { icon: LucideIcon; color: string; bg: string; label: string }> = {
-  startup:  { icon: Rocket,       color: "#FF4A24", bg: "rgba(255,74,36,0.15)",  label: "Startup"    },
+  startup:  { icon: Rocket,       color: "#FB7141", bg: "rgba(251,113,65,0.15)",  label: "Startup"    },
   research: { icon: FlaskConical, color: "#6D41FF", bg: "rgba(109,65,255,0.15)", label: "Ricerca"    },
   creative: { icon: Palette,      color: "#C84FD0", bg: "rgba(200,79,208,0.15)", label: "Creatività" },
   tech:     { icon: Code2,        color: "#0EA5E9", bg: "rgba(14,165,233,0.15)", label: "Tech"       },
@@ -49,7 +49,7 @@ export function ProfileCommunities({ communities }: Props) {
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-xl"
                 style={{
-                  background: c.avatar_emoji ? "var(--surface)" : (cat?.bg ?? "linear-gradient(135deg,#FF4A24,#6D41FF)"),
+                  background: c.avatar_emoji ? "var(--surface)" : (cat?.bg ?? "linear-gradient(135deg,#FB7141,#1E386C)"),
                   border: "1.5px solid var(--border)",
                 }}
               >

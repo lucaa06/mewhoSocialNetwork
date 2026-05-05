@@ -87,7 +87,7 @@ export function CommunityPostForm({ communityId, communityName }: { communityId:
           type="submit"
           disabled={loading || !content.trim()}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40"
-          style={{ background: "#FF4A24", boxShadow: "0 2px 10px rgba(255,74,36,0.30)" }}
+          style={{ background: "#FB7141", boxShadow: "0 2px 10px rgba(251,113,65,0.30)" }}
         >
           <Send className="w-3.5 h-3.5" />
           {loading ? "Pubblicando…" : "Pubblica"}

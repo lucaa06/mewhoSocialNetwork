@@ -51,7 +51,7 @@ export function AdminCreatePostForm() {
       </div>
       <button type="submit" disabled={isPending || !form.content.trim()}
         className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-40"
-        style={{ background: "#FF4A24" }}>
+        style={{ background: "#FB7141" }}>
         {isPending ? "Pubblicando..." : "Pubblica post"}
       </button>
     </form>

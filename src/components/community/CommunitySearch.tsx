@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, X, Rocket, FlaskConical, Palette, Code2, Globe, Sparkles, Users2 } from "lucide-react";
 
 const CATEGORIES = [
-  { value: "startup",  label: "Startup",    icon: Rocket,       color: "#FF4A24" },
+  { value: "startup",  label: "Startup",    icon: Rocket,       color: "#FB7141" },
   { value: "research", label: "Ricerca",    icon: FlaskConical, color: "#6D41FF" },
   { value: "creative", label: "Creatività", icon: Palette,      color: "#C84FD0" },
   { value: "tech",     label: "Tech",       icon: Code2,        color: "#0EA5E9" },
@@ -105,7 +105,7 @@ export function CommunitySearch({ communities }: { communities: Community[] }) {
                   <div
                     className="w-8 h-8 rounded-xl flex items-center justify-center text-base shrink-0 overflow-hidden"
                     style={{
-                      background: c.avatar_emoji ? "var(--surface)" : (cat ? `${cat.color}18` : "linear-gradient(135deg,#FF4A24,#6D41FF)"),
+                      background: c.avatar_emoji ? "var(--surface)" : (cat ? `${cat.color}18` : "linear-gradient(135deg,#FB7141,#1E386C)"),
                       border: "1px solid var(--border)",
                     }}
                   >
@@ -192,7 +192,7 @@ export function CommunitySearch({ communities }: { communities: Community[] }) {
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-xl overflow-hidden"
                   style={{
-                    background: c.avatar_emoji ? "var(--surface)" : (cat ? `${cat.color}18` : "linear-gradient(135deg,#FF4A24,#6D41FF)"),
+                    background: c.avatar_emoji ? "var(--surface)" : (cat ? `${cat.color}18` : "linear-gradient(135deg,#FB7141,#1E386C)"),
                     border: "1.5px solid var(--border)",
                   }}
                 >

@@ -78,8 +78,8 @@ export default async function AdminUserDetailPage({ params }: Props) {
           <span
             className="text-xs font-bold px-2.5 py-1 rounded-full"
             style={{
-              background: reportCount >= 3 ? "rgba(220,38,38,0.1)" : reportCount >= 2 ? "rgba(255,74,36,0.1)" : "rgba(0,0,0,0.05)",
-              color: reportCount >= 3 ? "#dc2626" : reportCount >= 2 ? "#FF4A24" : "rgba(0,0,0,0.4)",
+              background: reportCount >= 3 ? "rgba(220,38,38,0.1)" : reportCount >= 2 ? "rgba(251,113,65,0.1)" : "rgba(0,0,0,0.05)",
+              color: reportCount >= 3 ? "#dc2626" : reportCount >= 2 ? "#FB7141" : "rgba(0,0,0,0.4)",
             }}
           >
             {reportCount} / 3
@@ -92,7 +92,7 @@ export default async function AdminUserDetailPage({ params }: Props) {
             className="h-full rounded-full transition-all"
             style={{
               width: `${Math.min((reportCount / 3) * 100, 100)}%`,
-              background: reportCount >= 3 ? "#dc2626" : reportCount >= 2 ? "#FF4A24" : "#D97706",
+              background: reportCount >= 3 ? "#dc2626" : reportCount >= 2 ? "#FB7141" : "#D97706",
             }}
           />
         </div>
@@ -102,7 +102,7 @@ export default async function AdminUserDetailPage({ params }: Props) {
           <div className="space-y-2">
             <p className="text-xs font-semibold text-black/40 uppercase tracking-widest">Ricorsi in attesa ({pendingAppeals.length})</p>
             {pendingAppeals.map(r => (
-              <div key={r.id} className="rounded-xl p-3" style={{ background: "rgba(255,74,36,0.06)", border: "1px solid rgba(255,74,36,0.15)" }}>
+              <div key={r.id} className="rounded-xl p-3" style={{ background: "rgba(251,113,65,0.06)", border: "1px solid rgba(251,113,65,0.15)" }}>
                 <p className="text-xs font-medium text-black/70 mb-1">{r.appeal_message}</p>
                 <p className="text-[10px] text-black/35">Motivo originale: {r.reason}</p>
                 <div className="flex gap-2 mt-2">
@@ -119,7 +119,7 @@ export default async function AdminUserDetailPage({ params }: Props) {
             {reports.map(r => (
               <div key={r.id} className="flex items-center gap-2 text-xs text-black/50 py-1">
                 <span className="w-1.5 h-1.5 rounded-full shrink-0"
-                  style={{ background: r.status === "resolved" ? "#22c55e" : r.status === "dismissed" ? "#9ca3af" : "#FF4A24" }} />
+                  style={{ background: r.status === "resolved" ? "#22c55e" : r.status === "dismissed" ? "#9ca3af" : "#FB7141" }} />
                 <span className="flex-1 truncate">{r.reason}</span>
                 <span className="text-black/30 shrink-0">{formatDate(r.created_at)}</span>
               </div>

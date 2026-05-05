@@ -15,7 +15,7 @@ interface Community {
 }
 
 const CATEGORY_COLOR: Record<string, string> = {
-  startup: "#FF4A24", research: "#6D41FF", creative: "#C84FD0",
+  startup: "#FB7141", research: "#6D41FF", creative: "#C84FD0",
   tech: "#0EA5E9", social: "#16A34A", other: "#D97706",
 };
 const CATEGORY_LABEL: Record<string, string> = {
@@ -77,7 +77,7 @@ export function AdminCommunityCard({ community }: { community: Community }) {
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="Nome community"
-            className="w-full px-3 py-2 rounded-xl border border-black/10 bg-white text-sm text-black focus:outline-none focus:border-[#FF4A24]"
+            className="w-full px-3 py-2 rounded-xl border border-black/10 bg-white text-sm text-black focus:outline-none focus:border-[#FB7141]"
           />
           {/* Description */}
           <textarea
@@ -85,7 +85,7 @@ export function AdminCommunityCard({ community }: { community: Community }) {
             onChange={e => setDescription(e.target.value)}
             placeholder="Descrizione (opzionale)"
             rows={2}
-            className="w-full px-3 py-2 rounded-xl border border-black/10 bg-white text-sm text-black resize-none focus:outline-none focus:border-[#FF4A24]"
+            className="w-full px-3 py-2 rounded-xl border border-black/10 bg-white text-sm text-black resize-none focus:outline-none focus:border-[#FB7141]"
           />
           {/* Actions */}
           <div className="flex gap-2">
@@ -93,7 +93,7 @@ export function AdminCommunityCard({ community }: { community: Community }) {
               onClick={handleSave}
               disabled={saving}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-white"
-              style={{ background: "#FF4A24", opacity: saving ? 0.6 : 1 }}
+              style={{ background: "#FB7141", opacity: saving ? 0.6 : 1 }}
             >
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
               Salva

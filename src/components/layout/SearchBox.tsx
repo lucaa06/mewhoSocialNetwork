@@ -19,7 +19,7 @@ interface Suggestion {
 }
 
 const ROLE_COLOR: Record<string, string> = {
-  startupper: "#FF4A24", researcher: "#6D41FF", user: "#D97706", admin: "#374151",
+  startupper: "#FB7141", researcher: "#6D41FF", user: "#D97706", admin: "#374151",
 };
 
 export function SearchBox() {
@@ -148,7 +148,7 @@ export function SearchBox() {
           {loading && (
             <div className="flex justify-center py-4">
               <div className="w-4 h-4 rounded-full border-2 animate-spin"
-                style={{ borderColor: "var(--border)", borderTopColor: "#FF4A24" }} />
+                style={{ borderColor: "var(--border)", borderTopColor: "#FB7141" }} />
             </div>
           )}
 

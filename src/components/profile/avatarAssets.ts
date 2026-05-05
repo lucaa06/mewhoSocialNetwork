@@ -19,7 +19,7 @@ const w = (inner: string) =>
 
 // ─── BACKGROUND ───────────────────────────────────────────────────────────────
 export const BG_OPTIONS: AvatarOption[] = [
-  { id:"bg_orange", label:"Arancione", svg: w(`<circle cx="200" cy="200" r="199" fill="#FF4A24"/>`) },
+  { id:"bg_orange", label:"Arancione", svg: w(`<circle cx="200" cy="200" r="199" fill="#FB7141"/>`) },
   { id:"bg_navy",   label:"Blu navy",  svg: w(`<circle cx="200" cy="200" r="199" fill="#1E3A5F"/>`) },
   { id:"bg_grey",   label:"Grigio",    svg: w(`<circle cx="200" cy="200" r="199" fill="#8B9BB4"/>`) },
   { id:"bg_purple", label:"Viola",     svg: w(`<circle cx="200" cy="200" r="199" fill="#6D41FF"/>`) },
@@ -220,7 +220,7 @@ export const HAIR_BACK_OPTIONS: AvatarOption[] = [
   { id:"hb_ponytail",label:"Coda",       svg: w(`
     <path d="M182,82 Q178,150 175,340 Q188,360 200,340 Q212,360 225,340 Q222,150 218,82Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
     <rect x="184" y="75" width="32" height="14" rx="7" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="1.5"/>
-    <rect x="186" y="72" width="28" height="8" rx="4" fill="#FF4A24"/>
+    <rect x="186" y="72" width="28" height="8" rx="4" fill="#FB7141"/>
   `) },
   { id:"hb_dreads",  label:"Dreadlock",  svg: w(`
     <path d="M108,148 C88,200 80,310 86,395 Q96,400 104,388 Q100,300 112,215 Q120,175 122,148Z" fill="HAIR_PLACEHOLDER" stroke="#1a0e05" stroke-width="2"/>
@@ -302,9 +302,9 @@ export const HAIR_FRONT_OPTIONS: AvatarOption[] = [
 export const CLOTHES_OPTIONS: AvatarOption[] = [
   // Hoodie
   { id:"c_hoodie_orange", label:"Felpa arancio", svg: w(`
-    <path d="M55,400 Q70,300 118,275 L168,260 Q200,278 232,260 L282,275 Q330,300 345,400Z" fill="#FF4A24" stroke="#1a0e05" stroke-width="2"/>
-    <path d="M118,275 Q108,250 95,255 L68,288 Q88,290 96,278" fill="#FF4A24" stroke="#1a0e05" stroke-width="2"/>
-    <path d="M282,275 Q292,250 305,255 L332,288 Q312,290 304,278" fill="#FF4A24" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M55,400 Q70,300 118,275 L168,260 Q200,278 232,260 L282,275 Q330,300 345,400Z" fill="#FB7141" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M118,275 Q108,250 95,255 L68,288 Q88,290 96,278" fill="#FB7141" stroke="#1a0e05" stroke-width="2"/>
+    <path d="M282,275 Q292,250 305,255 L332,288 Q312,290 304,278" fill="#FB7141" stroke="#1a0e05" stroke-width="2"/>
     <path d="M168,260 Q184,268 200,268 Q216,268 232,260 Q220,280 200,282 Q180,280 168,260Z" fill="#cc3a1a" stroke="#1a0e05" stroke-width="1.5"/>
     <line x1="200" y1="282" x2="200" y2="400" stroke="#cc3a1a" stroke-width="4"/>
   `) },
@@ -407,8 +407,8 @@ export const ACCESSORIES_OPTIONS: AvatarOption[] = [
   { id:"ac_none",       label:"Nessuno",    svg: w(``) },
   { id:"ac_headphones", label:"Cuffie",     svg: w(`
     <path d="M100,185 C100,100 144,68 200,68 C256,68 300,100 300,185" fill="none" stroke="#1a0e05" stroke-width="14" stroke-linecap="round"/>
-    <rect x="86"  y="168" width="34" height="46" rx="14" fill="#FF4A24" stroke="#1a0e05" stroke-width="2.5"/>
-    <rect x="280" y="168" width="34" height="46" rx="14" fill="#FF4A24" stroke="#1a0e05" stroke-width="2.5"/>
+    <rect x="86"  y="168" width="34" height="46" rx="14" fill="#FB7141" stroke="#1a0e05" stroke-width="2.5"/>
+    <rect x="280" y="168" width="34" height="46" rx="14" fill="#FB7141" stroke="#1a0e05" stroke-width="2.5"/>
     <rect x="90"  y="174" width="26" height="34" rx="10" fill="#cc3a1a"/>
   `) },
   { id:"ac_hijab",      label:"Velo",       svg: w(`
@@ -419,7 +419,7 @@ export const ACCESSORIES_OPTIONS: AvatarOption[] = [
     <path d="M300,150 Q292,165 295,185" fill="none" stroke="#1a0e05" stroke-width="1.5" opacity=".4"/>
   `) },
   { id:"ac_headband",   label:"Cerchietto", svg: w(`
-    <path d="M100,138 C100,90 144,68 200,68 C256,68 300,90 300,138" fill="none" stroke="#FF4A24" stroke-width="18" stroke-linecap="round"/>
+    <path d="M100,138 C100,90 144,68 200,68 C256,68 300,90 300,138" fill="none" stroke="#FB7141" stroke-width="18" stroke-linecap="round"/>
     <path d="M100,138 C100,90 144,68 200,68 C256,68 300,90 300,138" fill="none" stroke="#cc3a1a" stroke-width="3" stroke-linecap="round" stroke-dasharray="0 32 0 32"/>
   `) },
   { id:"ac_earrings",   label:"Orecchini",  svg: w(`
@@ -458,7 +458,7 @@ export const CATEGORIES: AvatarCategory[] = [
 
 // ─── DEFAULT STATE ────────────────────────────────────────────────────────────
 export const DEFAULT_STATE: AvatarState = {
-  bgColor:   "#FF4A24",
+  bgColor:   "#FB7141",
   skinTone:  "#E8B88A",
   hairColor: "#1A1A1A",
   layers: {

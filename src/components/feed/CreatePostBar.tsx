@@ -11,7 +11,7 @@ interface CreatePostBarProps {
 }
 
 const ROLE_META: Record<string, { label: string; color: string }> = {
-  startupper: { label: "Startupper", color: "#FF4A24" },
+  startupper: { label: "Startupper", color: "#FB7141" },
   researcher: { label: "Ricercatore", color: "#6D41FF" },
   user:       { label: "Maker",       color: "#D97706" },
   admin:      { label: "Admin",        color: "#374151" },

@@ -13,8 +13,8 @@ const FEATURES = [
     icon: MapPin,
     title: "Geolocalizzato",
     description: "Connettiti con startup, ricercatori e maker nella tua città. Le migliori collaborazioni nascono vicino a te.",
-    color: "#FF4A24",
-    bg: "rgba(255,74,36,0.08)",
+    color: "#FB7141",
+    bg: "rgba(251,113,65,0.08)",
   },
   {
     icon: Users2,
@@ -40,7 +40,7 @@ const FEATURES = [
 ];
 
 const ROLES = [
-  { icon: Rocket,       label: "Startupper",  color: "#FF4A24", desc: "Costruisci il futuro" },
+  { icon: Rocket,       label: "Startupper",  color: "#FB7141", desc: "Costruisci il futuro" },
   { icon: FlaskConical, label: "Ricercatore",  color: "#6D41FF", desc: "Esplora l'ignoto"    },
   { icon: Zap,          label: "Maker",        color: "#D97706", desc: "Crea qualcosa di bello" },
   { icon: Globe,        label: "Innovatore",   color: "#16A34A", desc: "Cambia il mondo"      },
@@ -119,7 +119,7 @@ export function LandingPage() {
           </Link>
           <Link href="/register"
             className="flex items-center gap-1.5 text-sm font-bold px-5 py-2.5 rounded-xl text-white transition-all active:scale-95"
-            style={{ background: "linear-gradient(135deg,#FF4A24,#C84FD0)", boxShadow: "0 4px 16px rgba(255,74,36,0.30)" }}>
+            style={{ background: "#FB7141", boxShadow: "0 4px 16px rgba(251,113,65,0.30)" }}>
             <Sparkles className="w-3.5 h-3.5" />
             Unisciti
           </Link>
@@ -132,7 +132,7 @@ export function LandingPage() {
         <div
           className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(circle, rgba(255,74,36,0.12) 0%, rgba(200,79,208,0.08) 40%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(251,113,65,0.12) 0%, rgba(200,79,208,0.08) 40%, transparent 70%)",
             filter: "blur(60px)",
             animation: "slowPulse 6s ease-in-out infinite",
           }}
@@ -152,9 +152,9 @@ export function LandingPage() {
         >
           {/* Eyebrow */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
-            style={{ background: "rgba(255,74,36,0.08)", border: "1px solid rgba(255,74,36,0.15)" }}>
-            <MapPin className="w-3.5 h-3.5" style={{ color: "#FF4A24" }} />
-            <span className="text-xs font-bold" style={{ color: "#FF4A24", letterSpacing: "0.05em" }}>
+            style={{ background: "rgba(251,113,65,0.08)", border: "1px solid rgba(251,113,65,0.15)" }}>
+            <MapPin className="w-3.5 h-3.5" style={{ color: "#FB7141" }} />
+            <span className="text-xs font-bold" style={{ color: "#FB7141", letterSpacing: "0.05em" }}>
               IL SOCIAL PER CHI COSTRUISCE IL FUTURO
             </span>
           </div>
@@ -165,7 +165,7 @@ export function LandingPage() {
             style={{ color: "#0a0a0a", fontFamily: "var(--fh)", letterSpacing: "-1.5px" }}
           >
             Incontra chi
-            <span style={{ background: "linear-gradient(135deg,#FF4A24,#C84FD0,#6D41FF)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+            <span style={{ background: "linear-gradient(135deg,#FB7141,#1E386C)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               {" "}trasforma{" "}
             </span>
             le idee in realtà
@@ -181,7 +181,7 @@ export function LandingPage() {
             <Link
               href="/register"
               className="flex items-center gap-2 text-base font-bold px-8 py-3.5 rounded-2xl text-white transition-all hover:scale-[1.03] active:scale-[.98]"
-              style={{ background: "linear-gradient(135deg,#FF4A24,#C84FD0)", boxShadow: "0 6px 24px rgba(255,74,36,0.35)" }}
+              style={{ background: "#FB7141", boxShadow: "0 6px 24px rgba(251,113,65,0.35)" }}
             >
               Inizia gratis
               <ArrowRight className="w-4 h-4" />
@@ -242,7 +242,7 @@ export function LandingPage() {
       <section className="px-5 sm:px-8 pb-20">
         <div className="max-w-3xl mx-auto">
           <div className="rounded-3xl p-8 text-center"
-            style={{ background: "linear-gradient(135deg,rgba(255,74,36,0.06),rgba(200,79,208,0.06),rgba(109,65,255,0.06))", border: "1.5px solid rgba(109,65,255,0.12)" }}>
+            style={{ background: "linear-gradient(135deg,rgba(251,113,65,0.06),rgba(200,79,208,0.06),rgba(109,65,255,0.06))", border: "1.5px solid rgba(109,65,255,0.12)" }}>
             <BadgeCheck className="w-10 h-10 mx-auto mb-4" style={{ color: "#6D41FF" }} strokeWidth={1.5} />
             <h3 className="text-xl font-black mb-2" style={{ color: "#0a0a0a", fontFamily: "var(--fh)" }}>
               Solo persone reali
@@ -253,7 +253,7 @@ export function LandingPage() {
             <Link
               href="/register"
               className="inline-flex items-center gap-2 text-sm font-bold px-6 py-3 rounded-xl text-white transition-all hover:scale-[1.03]"
-              style={{ background: "linear-gradient(135deg,#6D41FF,#C84FD0)", boxShadow: "0 4px 16px rgba(109,65,255,0.30)" }}
+              style={{ background: "linear-gradient(135deg,#1E386C,#FB7141)", boxShadow: "0 4px 16px rgba(109,65,255,0.30)" }}
             >
               <Sparkles className="w-4 h-4" />
               Crea il tuo profilo

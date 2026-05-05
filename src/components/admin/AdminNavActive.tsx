@@ -91,7 +91,7 @@ export function AdminNavActive() {
             {count > 0 && !active && (
               <span
                 className="text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
-                style={{ background: "#FF4A24", color: "white" }}
+                style={{ background: "#FB7141", color: "white" }}
               >
                 {count > 99 ? "99+" : count}
               </span>

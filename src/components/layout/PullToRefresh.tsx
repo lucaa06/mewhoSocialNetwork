@@ -70,7 +70,7 @@ export function PullToRefresh() {
         <RefreshCw
           className="w-4 h-4"
           style={{
-            color: ready ? "#FF4A24" : "var(--muted)",
+            color: ready ? "#FB7141" : "var(--muted)",
             transform: `rotate(${progress * 180}deg)`,
             transition: "color 0.2s",
             animation: refreshing ? "spin 0.7s linear infinite" : "none",

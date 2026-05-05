@@ -23,7 +23,7 @@ const sideCannons: Effect = () => {
 // 3. Fireworks
 const fireworks: Effect = () => {
   const end = Date.now() + 800;
-  const colors = ["#FF4A24", "#2563eb", "#10b981", "#f59e0b", "#fff"];
+  const colors = ["#FB7141", "#2563eb", "#10b981", "#f59e0b", "#fff"];
   const frame = () => {
     confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0 }, colors, scalar: 0.8, ticks: 80 });
     confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1 }, colors, scalar: 0.8, ticks: 80 });
@@ -42,7 +42,7 @@ const starShower: Effect = () => {
     gravity: 0.6,
     scalar: 0.8,
     shapes: ["star"],
-    colors: ["#FF4A24", "#f59e0b", "#fff", "#10b981"],
+    colors: ["#FB7141", "#f59e0b", "#fff", "#10b981"],
     ticks: 150,
   });
 };
@@ -55,7 +55,7 @@ const triangleBurst: Effect = () => {
     origin: { y: 0.65 },
     shapes: ["circle", "square"],
     scalar: 0.6,
-    colors: ["#FF4A24", "#2563eb", "#10b981", "#7c3aed", "#f59e0b"],
+    colors: ["#FB7141", "#2563eb", "#10b981", "#7c3aed", "#f59e0b"],
     ticks: 130,
   });
 };
@@ -71,7 +71,7 @@ const sparkle: Effect = () => {
     ticks: 120,
     scalar: 0.5,
     shapes: ["circle"],
-    colors: ["#fff", "#FF4A24", "#2563eb", "#10b981", "#f59e0b"],
+    colors: ["#fff", "#FB7141", "#2563eb", "#10b981", "#f59e0b"],
   });
 };
 
@@ -106,7 +106,7 @@ const vortex: Effect = () => {
       spread: 0,
       angle,
       origin: { x: 0.5, y: 0.5 },
-      colors: ["#FF4A24", "#2563eb", "#10b981"],
+      colors: ["#FB7141", "#2563eb", "#10b981"],
     });
     if (angle >= 360) clearInterval(intervalId);
   }, 20);
@@ -122,7 +122,7 @@ const starsUp: Effect = () => {
     gravity: 0.5,
     shapes: ["star"],
     scalar: 0.9,
-    colors: ["#FF4A24", "#fff", "#f59e0b", "#2563eb"],
+    colors: ["#FB7141", "#fff", "#f59e0b", "#2563eb"],
     ticks: 160,
   });
 };
@@ -137,7 +137,7 @@ const centerPop: Effect = () => {
     scalar: 0.65,
     ticks: 100,
     gravity: 0.8,
-    colors: ["#FF4A24", "#2563eb", "#10b981", "#7c3aed", "#f59e0b", "#fff"],
+    colors: ["#FB7141", "#2563eb", "#10b981", "#7c3aed", "#f59e0b", "#fff"],
   });
 };
 

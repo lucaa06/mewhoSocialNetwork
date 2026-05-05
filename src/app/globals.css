@@ -19,7 +19,7 @@
     --input-bg:          #FFFFFF;
     --input-placeholder: #C4AFA8;
     /* ── brand: coral "me" ── */
-    --accent:      #FF4A24;
+    --accent:      #FB7141;
     --accent-2:    #FF7252;
     --accent-soft: #FFF1ED;
     --accent-hover:#FFE4DC;
@@ -49,8 +49,8 @@
     --subtle:rgba(245,239,232,0.36);
     --input-bg:          rgba(255,255,255,0.07);
     --input-placeholder: rgba(245,239,232,0.36);
-    --accent-soft:  rgba(255,74,36,0.18);
-    --accent-hover: rgba(255,74,36,0.26);
+    --accent-soft:  rgba(251,113,65,0.18);
+    --accent-hover: rgba(251,113,65,0.26);
     --purple-lt: rgba(109,65,255,0.20);
     --amber-lt:  rgba(255,176,32,0.15);
     --shadow:    0 2px 20px rgba(0,0,0,0.45);
@@ -68,7 +68,7 @@
     -moz-osx-font-smoothing: grayscale;
     transition: background 0.25s ease, color 0.25s ease;
   }
-  ::selection { background: #FF4A24; color: #fff; }
+  ::selection { background: #FB7141; color: #fff; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 99px; }
