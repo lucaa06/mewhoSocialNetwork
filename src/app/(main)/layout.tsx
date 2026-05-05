@@ -2,8 +2,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { AiFloatingButton } from "@/components/layout/AiFloatingButton";
 import { BetaButton } from "@/components/beta/BetaButton";
-import { ScrollToTopButton } from "@/components/layout/ScrollToTopButton";
 import { PullToRefresh } from "@/components/layout/PullToRefresh";
+import { SwipeNav } from "@/components/layout/SwipeNav";
 import { createClient } from "@/lib/supabase/server";
 import { cache } from "react";
 
@@ -81,11 +81,12 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
       <Navbar user={profile} unreadCount={unreadCount} unreadMessages={unreadMessages} />
-      <div className="max-w-2xl lg:max-w-3xl mx-auto px-1.5 sm:px-5 lg:px-8 pt-16 pb-28">
-        <main className="mt-4">{children}</main>
-      </div>
+      <SwipeNav>
+        <div className="max-w-2xl lg:max-w-3xl mx-auto px-1.5 sm:px-5 lg:px-8 pt-16 pb-28">
+          <main className="mt-4">{children}</main>
+        </div>
+      </SwipeNav>
       <BottomNav user={profile} unreadCount={unreadCount} unreadMessages={unreadMessages} />
-      <ScrollToTopButton />
       <PullToRefresh />
       {profile && <AiFloatingButton />}
       {profile?.is_beta && <BetaButton userId={profile.id} />}

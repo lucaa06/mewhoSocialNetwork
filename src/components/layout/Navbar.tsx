@@ -53,7 +53,7 @@ export function Navbar({ user, unreadCount = 0, unreadMessages = 0 }: NavbarProp
                 <Link
                   href="/admin/dashboard"
                   className="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-colors"
-                  style={{ borderColor: "rgba(255,74,36,0.25)", color: "#FF4A24", background: "var(--accent-soft)" }}
+                  style={{ borderColor: "rgba(251,113,65,0.25)", color: "#FB7141", background: "var(--accent-soft)" }}
                 >
                   <LayoutDashboard className="w-3.5 h-3.5" />
                   Centro di Comando
@@ -64,7 +64,7 @@ export function Navbar({ user, unreadCount = 0, unreadMessages = 0 }: NavbarProp
               <Link
                 href="/create"
                 className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-1.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95"
-                style={{ background: "#FF4A24", boxShadow: "0 2px 10px rgba(255,74,36,0.30)" }}
+                style={{ background: "#FB7141", boxShadow: "0 2px 10px rgba(251,113,65,0.30)" }}
                 aria-label="Crea post"
               >
                 <Plus className="w-4 h-4" />
@@ -82,7 +82,7 @@ export function Navbar({ user, unreadCount = 0, unreadMessages = 0 }: NavbarProp
                 {unreadCount > 0 && (
                   <span
                     className="absolute top-1 right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full text-[10px] font-bold text-white px-1"
-                    style={{ background: "#FF4A24", lineHeight: 1 }}
+                    style={{ background: "#FB7141", lineHeight: 1 }}
                   >
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
@@ -100,7 +100,7 @@ export function Navbar({ user, unreadCount = 0, unreadMessages = 0 }: NavbarProp
                 {unreadMessages > 0 && (
                   <span
                     className="absolute top-1 right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full text-[10px] font-bold text-white px-1"
-                    style={{ background: "#FF4A24", lineHeight: 1 }}
+                    style={{ background: "#FB7141", lineHeight: 1 }}
                   >
                     {unreadMessages > 99 ? "99+" : unreadMessages}
                   </span>
@@ -110,7 +110,7 @@ export function Navbar({ user, unreadCount = 0, unreadMessages = 0 }: NavbarProp
               {/* Avatar / profile */}
               <Link
                 href={`/u/${user.username}`}
-                className="w-9 h-9 squircle flex items-center justify-center text-xs font-bold overflow-hidden"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold overflow-hidden"
                 style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--fg)" }}
                 aria-label="Il mio profilo"
               >
@@ -137,7 +137,7 @@ export function Navbar({ user, unreadCount = 0, unreadMessages = 0 }: NavbarProp
               <Link
                 href="/register"
                 className="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-white transition-all"
-                style={{ background: "#FF4A24", boxShadow: "0 2px 10px rgba(255,74,36,0.30)" }}
+                style={{ background: "#FB7141", boxShadow: "0 2px 10px rgba(251,113,65,0.30)" }}
               >
                 Registrati
               </Link>

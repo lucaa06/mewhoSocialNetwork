@@ -10,7 +10,7 @@ import { toggleLike, toggleSave } from "@/app/actions/posts";
 import { SharePostModal } from "@/components/messages/SharePostModal";
 
 const ROLE_COLOR: Record<string, string> = {
-  startupper: "#FF4A24",
+  startupper: "#FB7141",
   researcher: "#6D41FF",
   user:       "#D97706",
   admin:      "#374151",
@@ -107,13 +107,13 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
 
   return (
     <article
-      className="border transition-all"
+      className="transition-all"
       style={{
         background: "var(--card)",
-        borderColor: "var(--border)",
         borderRadius: "1.1rem",
         overflow: "hidden",
         position: "relative",
+        boxShadow: "0 1px 6px rgba(0,0,0,0.07)",
       }}
     >
       {/* Role-color top accent strip */}
@@ -124,7 +124,7 @@ export function PostCard({ post, isLoggedIn }: { post: Post; isLoggedIn?: boolea
         <Link href={`/u/${author?.username ?? "#"}`} className="flex items-center gap-3 group min-w-0">
           {/* Avatar: emoji > image > initials */}
           <div
-            className="w-10 h-10 squircle flex items-center justify-center overflow-hidden shrink-0 text-sm font-bold"
+            className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden shrink-0 text-sm font-bold"
             style={{
               background: author?.avatar_emoji ? "var(--surface)" : `${roleColor}18`,
               border: `1.5px solid ${roleColor}35`,

@@ -42,39 +42,37 @@ export function CreatePostForm() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const supabase = createClient();
 
-  // Detect @mention at cursor
+  // Detect @mention at cursor — triggers even on bare "@"
   const detectMention = useCallback((text: string, cursorPos: number) => {
     const before = text.slice(0, cursorPos);
     const match = before.match(/@([a-z0-9_]*)$/i);
     if (match) {
-      const partial = match[1].toLowerCase();
-      if (partial.length >= 1) {
-        setMentionQuery(partial);
-        setMentionCursorPos(cursorPos);
-        return;
-      }
+      setMentionQuery(match[1].toLowerCase());
+      setMentionCursorPos(cursorPos);
+      return;
     }
     setMentionQuery(null);
     setMentionSuggestions([]);
   }, []);
 
-  // Fetch suggestions when mentionQuery changes
+  // Fetch suggestions: search username + display_name, A-Z, max 3
   useEffect(() => {
-    if (!mentionQuery) {
+    if (mentionQuery === null) {
       setMentionSuggestions([]);
       return;
     }
     let cancelled = false;
-    supabase
+    const q = supabase
       .from("profiles")
       .select("id, username, display_name, avatar_url")
-      .ilike("username", `${mentionQuery}%`)
-      .limit(5)
-      .then(({ data }) => {
-        if (!cancelled && data) {
-          setMentionSuggestions(data as MentionSuggestion[]);
-        }
-      });
+      .order("username", { ascending: true })
+      .limit(3);
+    const filtered = mentionQuery.length > 0
+      ? q.or(`username.ilike.${mentionQuery}%,display_name.ilike.${mentionQuery}%`)
+      : q;
+    filtered.then(({ data }) => {
+      if (!cancelled && data) setMentionSuggestions(data as MentionSuggestion[]);
+    });
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mentionQuery]);
